@@ -1,0 +1,27 @@
+{
+  "name": "vibinos-discord",
+  "version": "0.1.0",
+  "description": "Party time discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1qk1/vibinos-discord.git"
+  },
+  "author": "@qktweets",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/1qk1/vibinos-discord/issues"
+  },
+  "homepage": "https://github.com/1qk1/vibinos-discord#readme",
+  "dependencies": {
+    "discord.js": "^12.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
