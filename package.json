@@ -21,7 +21,8 @@
   "dependencies": {
     "discord.js": "^12.0.2",
     "dotenv": "^8.2.0",
-    "ytdl-core": "^2.0.0"
+    "ytdl-core": "^2.0.0",
+    "ytdl-core-discord": "^1.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const ytdl = require("ytdl-core");
+const ytdl = require("ytdl-core-discord");
 
 require("dotenv").config();
 
@@ -15,13 +15,13 @@ client.on("message", message => {
   const msg = message.content.split(" ");
   switch (msg[0]) {
     case "#play": {
-      const play = (connection, message) => {
+      const play = async (connection, message) => {
         const server = servers[message.guild.id];
 
         message.channel.send("Now playing: " + server.queue[0] + "!");
         console.log(connection);
         server.dispatcher = connection.play(
-          ytdl(server.queue[0], { filter: "audioonly" })
+          await ytdl(server.queue[0], { type: "opus" })
         );
         server.queue.shift();
         server.dispatcher.on("end", () => {
