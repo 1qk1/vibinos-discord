@@ -21,9 +21,6 @@
   "dependencies": {
     "discord.js": "^12.0.2",
     "dotenv": "^8.2.0",
-    "ffmpeg": "0.0.4",
-    "ffmpeg-binaries": "^4.0.0",
-    "fluent-ffmpeg": "^2.1.2",
     "ytdl-core": "^2.0.0"
   },
   "devDependencies": {
