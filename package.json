@@ -20,6 +20,7 @@
   "homepage": "https://github.com/1qk1/vibinos-discord#readme",
   "dependencies": {
     "@discordjs/opus": "^0.1.0",
+    "combined-stream2": "^1.1.2",
     "discord.js": "^12.0.2",
     "dotenv": "^8.2.0",
     "ytdl-core": "^2.0.0",
