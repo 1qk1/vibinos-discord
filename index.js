@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
+const CombinedStream = require("combined-stream2");
 
 require("dotenv").config();
 
@@ -18,10 +19,15 @@ client.on("message", message => {
       const play = (connection, message) => {
         const server = servers[message.guild.id];
 
+        const stream = CombinedStream.create();
+
+        stream.append(ytdl(server.queue[0][0], { filter: "audioonly" }));
+        stream.append(ytdl(server.queue[0][1], { filter: "audioonly" }));
+
         message.channel.send("Now playing: " + server.queue[0] + "!");
-        server.dispatcher = connection.play(
-          ytdl(server.queue[0], { filter: "audioonly" })
-        );
+        server.dispatcher = connection.play(stream);
+        //   ytdl(server.queue[0], { filter: "audioonly" })
+        // );
         server.queue.shift();
         server.dispatcher.on("end", () => {
           if (server.queue[0]) {
@@ -44,7 +50,7 @@ client.on("message", message => {
       }
       const server = servers[message.guild.id];
 
-      server.queue.push(msg[1]);
+      server.queue.push(msg.slice(1));
       if (!message.guild.voiceConnection) {
         message.member.voice.channel.join().then(connection => {
           play(connection, message);
