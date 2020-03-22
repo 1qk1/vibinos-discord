@@ -19,7 +19,6 @@ client.on("message", message => {
         const server = servers[message.guild.id];
 
         message.channel.send("Now playing: " + server.queue[0] + "!");
-        console.log(connection);
         server.dispatcher = connection.play(
           ytdl(server.queue[0], { filter: "audioonly" })
         );
