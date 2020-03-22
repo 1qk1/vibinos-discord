@@ -26,8 +26,6 @@ client.on("message", message => {
 
         message.channel.send("Now playing: " + server.queue[0] + "!");
         server.dispatcher = connection.play(stream);
-        //   ytdl(server.queue[0], { filter: "audioonly" })
-        // );
         server.queue.shift();
         server.dispatcher.on("end", () => {
           if (server.queue[0]) {
