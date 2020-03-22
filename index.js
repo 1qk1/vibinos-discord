@@ -1,6 +1,7 @@
+const fs = require("fs");
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
-const CombinedStream = require("combined-stream2");
+const ffmpeg = require("fluent-ffmpeg");
 
 require("dotenv").config();
 
@@ -18,22 +19,49 @@ client.on("message", message => {
     case "#play": {
       const play = (connection, message) => {
         const server = servers[message.guild.id];
+        // download the files
+        // run ffmpeg -i 1.mp3 -i 2.mp3 -filter_complex amix=inputs=2:duration=shortest:dropout_transition=3 3.mp3
+        // to the connection.play
 
-        const stream = CombinedStream.create();
-
-        stream.append(ytdl(server.queue[0][0], { filter: "audioonly" }));
-        stream.append(ytdl(server.queue[0][1], { filter: "audioonly" }));
-
-        message.channel.send("Now playing: " + server.queue[0] + "!");
-        server.dispatcher = connection.play(stream);
-        server.queue.shift();
-        server.dispatcher.on("end", () => {
-          if (server.queue[0]) {
-            play(connection, message);
-          } else {
-            connection.disconnect();
-          }
-        });
+        // fs.unlinkSync(__dirname + "/1.mp3");
+        // fs.unlinkSync(__dirname + "/2.mp3");
+        ytdl(server.queue[0][0], {
+          filter: "audioonly",
+          quality: "highestaudio"
+        })
+          .pipe(fs.createWriteStream(__dirname + "/songs/1.mp3"))
+          .on("close", () => {
+            ytdl(server.queue[0][1], {
+              filter: "audioonly",
+              quality: "highestaudio"
+            })
+              .pipe(fs.createWriteStream(__dirname + "/songs/2.mp3"))
+              .on("close", () => {
+                message.channel.send(
+                  "Now playing: " + server.queue[0].join(" ") + "!"
+                );
+                // ffmpeg -i 1.mp3 -i 2.mp3 -filter_complex amix=inputs=2:duration=shortest:dropout_transition=2 3.mp3
+                ffmpeg()
+                  .input(__dirname + "/songs/1.mp3")
+                  .input(__dirname + "/songs/2.mp3")
+                  .inputOptions([
+                    "-filter_complex",
+                    "amix=inputs=2:duration=shortest:dropout_transition=2"
+                  ])
+                  .save(__dirname + "/songs/3.mp3");
+                server.dispatcher = connection.play(
+                  fs.createReadStream(__dirname + "/songs/3.mp3")
+                );
+                server.queue.shift();
+                server.dispatcher.on("end", () => {
+                  if (server.queue[0]) {
+                    play(connection, message);
+                  } else {
+                    connection.disconnect();
+                  }
+                });
+              });
+          });
       };
 
       if (!message.member.voice.channel.id) {
