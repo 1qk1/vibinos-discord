@@ -19,16 +19,20 @@
   },
   "homepage": "https://github.com/1qk1/vibinos-discord#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.1.0",
-    "combined-stream2": "^1.1.2",
-    "discord.js": "^12.0.2",
+    "@discordjs/opus": "^0.3.3",
+    "async": "^3.2.0",
+    "discord-player": "^3.2.1",
+    "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "fluent-ffmpeg": "^2.1.2",
-    "ytdl-core": "^2.0.0",
-    "ytdl-core-discord": "^1.1.0"
+    "mp3-duration": "^1.1.0",
+    "nanoid": "^3.1.20",
+    "shortid": "^2.2.16",
+    "sox": "^0.1.0",
+    "ytdl-core": "^4.4.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.7"
   },
   "engines": {
     "node": "12.x"
