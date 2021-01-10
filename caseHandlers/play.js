@@ -7,8 +7,12 @@ const songControls = require('../utils/songControls')
 
 const playHandler = (server, message, splitted) => {
   const songs = splitted;
+  console.log(songs)
+  if (songs.length === 0) {
+    return message.channel.send("Command usage: `#play childish gambino redbone` or `#play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg`")
+  }
   botControls.joinChannel(server, message.member.voice.channel).then(connection => {
-    if (songs.length == 1 && !ytdl.validateURL(songs[0])) {
+    if (songs.length === 1 && !ytdl.validateURL(songs[0])) {
       if (!process.env.YOUTUBE_KEY) return message.channel.send("Please enter a youtube API key to use this functionality.");
       // if it's not a youtube link
       const opts = {

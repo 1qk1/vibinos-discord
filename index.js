@@ -4,17 +4,21 @@ const client = require('./utils/client');
 const playHandler = require('./caseHandlers/play');
 const stopHandler = require('./caseHandlers/stop');
 const skipHandler = require('./caseHandlers/skip');
+const helpHandler = require('./caseHandlers/help');
 const botControls = require('./utils/botControls');
 const {state} = require('./utils/servers');
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setActivity(`#help and #play`, { type: "LISTENING" });
 });
+
 
 client.on("message", message => {
   if (message.content[0] !== "#") return;
   const action = message.content.match(/#\w+/i)[0]
-  const splitted = message.content.replace(`${action} `, '').split(', ');
+  let splitted = message.content.replace(`${action} `, '').replace(action, '').split(', ');
+  if (splitted[0] === "") splitted = []
   // #+" " = action for switch statement
   // everything else = search terms
   // if search terms 
@@ -82,6 +86,10 @@ client.on("message", message => {
       stopHandler(server);
       message.channel.send("Bye bye.");
       botControls.leaveChannel(server, message.member.voice.channel);
+      break;
+    }
+    case "#help": {
+      helpHandler(message);
       break;
     }
   }
