@@ -22,17 +22,16 @@ const playHandler = (server, message, splitted) => {
           if (error) {
             return message.channel.send(error);
           }
-          // compile them together
-              // play the final file
-              server.convertFinished();
-              if (server.queue.length == 0) {
-                server.addSong(songPaths[0]);
-                songControls.playSong(server);
-                message.channel.send(`Playing ${results[0].link}. Let's get funky.`);
-              } else {
-                server.addSong(songPaths[0]);
-                message.channel.send("Song mixed and added to queue.");
-              }
+          // play the final file
+          server.convertFinished();
+          if (server.queue.length == 0) {
+            server.addSong(songPaths[0]);
+            songControls.playSong(server);
+            message.channel.send(`Playing ${results[0].link}. Let's get funky.`);
+          } else {
+            server.addSong(songPaths[0]);
+            message.channel.send("Song mixed and added to queue.");
+          }
         })
       });
     } else {

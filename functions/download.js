@@ -22,9 +22,11 @@ const download = (songs, cb) => {
     video.pipe(fs.createWriteStream(songPath));
     video.on('end', function(info) {
       songPaths.push(songPath);
+      video.destroy();
       return cb2(null);
     });
     video.on('error', (error) => {
+      video.destroy();
       return cb2(error);
     });
   }, (err) => {
