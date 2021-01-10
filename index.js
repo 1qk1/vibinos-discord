@@ -15,7 +15,6 @@ client.on("message", message => {
   if (message.content[0] !== "#") return;
   const action = message.content.match(/#\w+/i)[0]
   const splitted = message.content.replace(`${action} `, '').split(', ');
-  console.log(action, splitted)
   // #+" " = action for switch statement
   // everything else = search terms
   // if search terms 

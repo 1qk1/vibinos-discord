@@ -11,7 +11,6 @@ const nextSong = (server) => {
 
 const playSong = (server) => {
   const songPath = server.queue[0]
-  console.log(songPath)
   const dispatcher = server.connection.play(songPath);
   server.dispatcher = dispatcher
   getVideoDurationInSeconds(songPath).then((duration) => {
