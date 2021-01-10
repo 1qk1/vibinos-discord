@@ -1,4 +1,4 @@
-const mp3Duration = require('mp3-duration');
+const { getVideoDurationInSeconds } = require('get-video-duration');
 
 const nextSong = (server) => {
   if (server.queue.length > 1) {
@@ -14,7 +14,7 @@ const playSong = (server) => {
   console.log(songPath)
   const dispatcher = server.connection.play(songPath);
   server.dispatcher = dispatcher
-  mp3Duration(songPath, function (err, duration) {
+  getVideoDurationInSeconds(songPath).then((duration) => {
     if (err) return console.log(err.message);
     server.timeout = setTimeout(() => {
       nextSong(server);

@@ -10,14 +10,14 @@ const download = (songs, cb) => {
     if (!ytdl.validateURL(song) && !ytdl.validateID(song)) {
       return cb2(`Song ${key + 1} is not a valid youtube song`);
     };
-    const video = ytdl(song, {filter: "audio"});
+    const video = ytdl(song, {filter: "audioonly"});
     // Will be called when the download starts.
     // video.on('info', function (info) {
     //     console.log('Download started');
     //     console.log(info);
     // });
     const videoID = ytdl.getVideoID(song)
-    const songPath = path.join(__dirname, `../downloads/${videoID}.mp3`);
+    const songPath = path.join(__dirname, `../downloads/${videoID}.mp4`);
     
     video.pipe(fs.createWriteStream(songPath));
     video.on('end', function(info) {
