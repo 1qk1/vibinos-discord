@@ -15,10 +15,11 @@ const playSong = (server) => {
   const dispatcher = server.connection.play(songPath);
   server.dispatcher = dispatcher
   getVideoDurationInSeconds(songPath).then((duration) => {
-    if (err) return console.log(err.message);
     server.timeout = setTimeout(() => {
       nextSong(server);
     }, (duration * 1000) + 2000)
+  }).catch(error => {
+    console.log(error)
   });
 }
 
