@@ -1,4 +1,3 @@
-const { getVideoDurationInSeconds } = require('get-video-duration');
 
 const nextSong = (server) => {
   if (server.queue.length > 1) {
@@ -11,15 +10,10 @@ const nextSong = (server) => {
 
 const playSong = (server) => {
   const songPath = server.queue[0]
-  const dispatcher = server.connection.play(songPath);
-  server.dispatcher = dispatcher
-  getVideoDurationInSeconds(songPath).then((duration) => {
-    server.timeout = setTimeout(() => {
-      nextSong(server);
-    }, (duration * 1000) + 2000)
-  }).catch(error => {
-    console.log(error)
+  const dispatcher = server.connection.play(songPath).on("finish", () => {
+    nextSong(server);
   });
+  server.dispatcher = dispatcher
 }
 
 const stopSongs = (server) => {
@@ -27,8 +21,6 @@ const stopSongs = (server) => {
   // clear convertQueue queue
   if (server.dispatcher) {
     server.queue = [];
-    clearTimeout(server.timeout);
-    server.timeout = null;
     server.dispatcher.pause();
     server.convertQueue = [];
   }

@@ -2,7 +2,6 @@ class Server {
   constructor({
     convertQueue = [],
     queue = [],
-    timeout = null,
     dispatcher = null,
     connection = null,
     channel = null,
@@ -10,7 +9,6 @@ class Server {
   } = {}) {
       this.convertQueue = convertQueue
       this.queue = queue
-      this.timeout = timeout
       this.dispatcher = dispatcher
       this.connection = connection
       this.channel = channel
@@ -27,9 +25,6 @@ class Server {
   convertFinished(){
     this.convertQueue = this.convertQueue.slice(1)
     return this.convertQueue
-  }
-  setTimeout(timeoutID){
-    this.timeout = timeoutID
   }
 }
 
