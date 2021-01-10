@@ -1,11 +1,12 @@
 class Server {
   constructor({
-    convertQueue = [], 
-    queue = [], 
-    timeout = null, 
-    dispatcher = null, 
+    convertQueue = [],
+    queue = [],
+    timeout = null,
+    dispatcher = null,
     connection = null,
-    channel = null
+    channel = null,
+    botChannel = null
   } = {}) {
       this.convertQueue = convertQueue
       this.queue = queue
@@ -13,12 +14,19 @@ class Server {
       this.dispatcher = dispatcher
       this.connection = connection
       this.channel = channel
+      this.botChannel = botChannel
   }
   addSong(song){
     this.queue.push(song)
+    return this.queue;
   }
   addConvert(songArray){
     this.convertQueue.push(songArray)
+    return this.convertQueue
+  }
+  convertFinished(){
+    this.convertQueue = this.convertQueue.slice(1)
+    return this.convertQueue
   }
   setTimeout(timeoutID){
     this.timeout = timeoutID

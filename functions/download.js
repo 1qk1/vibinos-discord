@@ -11,10 +11,7 @@ const download = (songs, cb) => {
     if (!ytdl.validateURL(song) && !ytdl.validateID(song)) {
       return cb2(`Song ${key + 1} is not a valid youtube song`);
     };
-    var video = ytdl(song, {
-      filter: "audio",
-      highWaterMark: 1024 * 1024 * 10
-    });
+    const video = ytdl(song, {filter: "audio"});
     // Will be called when the download starts.
     // video.on('info', function (info) {
     //     console.log('Download started');
@@ -36,10 +33,6 @@ const download = (songs, cb) => {
     return cb(null, songPaths);
   })
 }
-
-
-
-
 
 // },function(err){
 //   if(err)
