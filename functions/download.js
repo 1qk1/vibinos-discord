@@ -2,7 +2,6 @@ const async = require('async');
 const fs = require('fs');
 const path = require('path');
 const ytdl = require("ytdl-core");
-const shortid = require('shortid');
  
 const download = (songs, cb) => {
   // downloads songs and returns the file names
