@@ -34,6 +34,15 @@ client.on("message", message => {
       playHandler(server, message, splitted);
       break;
     }
+    case "#pause": {
+      if (!message.member.voice.channel) {
+        return message.channel.send(
+          "You must be in a channel to play the bot."
+        );
+      }
+      playHandler(server, message, splitted);
+      break;
+    }
     case "#skip" || "#next": {
       if (!message.member.voice.channel) {
         return message.channel.send(
