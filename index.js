@@ -6,17 +6,19 @@ const stopHandler = require('./caseHandlers/stop');
 const skipHandler = require('./caseHandlers/skip');
 const helpHandler = require('./caseHandlers/help');
 const botControls = require('./utils/botControls');
-const {state} = require('./utils/servers');
+const { state } = require('./utils/servers');
+
+const prefix = "#";
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  client.user.setActivity(`#help and #play`, { type: "LISTENING" });
+  client.user.setActivity(`${prefix}help and ${prefix}play`, { type: "LISTENING" });
 });
 
 
 client.on("message", message => {
-  if (message.content[0] !== "#") return;
-  const action = message.content.match(/#\w+/i)[0]
+  if (message.content[0] !== prefix) return;
+  const action = message.content.match(new RegExp(`${prefix}\\w+`, 'i'))[0]
   let splitted = message.content.replace(`${action} `, '').replace(action, '').split(', ');
   if (splitted[0] === "") splitted = []
   // #+" " = action for switch statement
@@ -28,7 +30,7 @@ client.on("message", message => {
   const server = state.get(message.guild.id);
   server.channel = message.member.voice.channel;
   switch (action) {
-    case "#play": {
+    case `${prefix}play`: {
       if (!message.member.voice.channel) {
         return message.channel.send(
           "You must be in a channel to play the bot."
@@ -37,7 +39,7 @@ client.on("message", message => {
       playHandler(server, message, splitted);
       break;
     }
-    case "#pause": {
+    case `${prefix}pause`: {
       if (!message.member.voice.channel) {
         return message.channel.send(
           "You must be in a channel to play the bot."
@@ -46,7 +48,7 @@ client.on("message", message => {
       playHandler(server, message, splitted);
       break;
     }
-    case "#skip" || "#next": {
+    case `${prefix}skip` || `${prefix}next`: {
       if (!message.member.voice.channel) {
         return message.channel.send(
           "You must be in a channel to play the bot."
@@ -55,7 +57,7 @@ client.on("message", message => {
       skipHandler(server, message);
       break;
     }
-    case "#stop": {
+    case `${prefix}stop`: {
       if (!message.member.voice.channel) {
         return message.channel.send(
           "You must be in a channel to play the bot."

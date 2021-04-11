@@ -28,7 +28,7 @@
     "nanoid": "^3.1.20",
     "utf-8-validate": "^5.0.4",
     "youtube-search": "^1.1.4",
-    "ytdl-core": "^4.4.2"
+    "ytdl-core": "^4.5.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
