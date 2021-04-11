@@ -7,8 +7,12 @@ const skipHandler = require('./caseHandlers/skip');
 const helpHandler = require('./caseHandlers/help');
 const botControls = require('./utils/botControls');
 const { state } = require('./utils/servers');
+const validator = require('validator');
 
-const prefix = "#";
+
+const blacklistedChars = '\\[\\\\;\'"\\]'
+
+const prefix = "@";
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -18,10 +22,12 @@ client.on("ready", () => {
 
 client.on("message", message => {
   if (message.content[0] !== prefix) return;
-  const action = message.content.match(new RegExp(`${prefix}\\w+`, 'i'))[0]
-  let splitted = message.content.replace(`${action} `, '').replace(action, '').split(', ');
+  const cleaned = validator.blacklist(message.content, blacklistedChars)
+  const action = cleaned.match(new RegExp(`\\${prefix}\\w+`, 'i'))[0]
+  let splitted = cleaned.replace(`${action} `, '').replace(action, '').split(', ');
+  console.log(blacklistedChars)
   if (splitted[0] === "") splitted = []
-  // #+" " = action for switch statement
+  // prefix +" " = action for switch statement
   // everything else = search terms
   // if search terms 
   if (!state.get(message.guild.id)) {
