@@ -1,7 +1,7 @@
 const songControls = require('../utils/songControls')
 
 const skipHandler = (server, message) => {
-  songControls.nextSong(server)
+  songControls.nextSong(server, message)
   message.channel.send("Skipping song.");
 }
 

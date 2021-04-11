@@ -9,7 +9,6 @@ const botControls = require('./utils/botControls');
 const { state } = require('./utils/servers');
 const validator = require('validator');
 
-
 const blacklistedChars = '\\[\\\\;\'"\\]'
 
 const prefix = process.env.PREFIX || "#";

@@ -1,51 +1,59 @@
 const ytdl = require('ytdl-core')
 const download = require('../functions/download')
-const youtubeSearch = require('youtube-search')
 const compileSongs = require('../functions/compileSongs')
 const botControls = require('../utils/botControls')
 const songControls = require('../utils/songControls')
 const isPlaylist = require("is-playlist")
 const ytpl = require('ytpl');
+const { getTracks } = require("spotify-url-info");
+const isSpotifyPlaylist = require('../utils/isSpotifyPlaylist')
+const yts = require('yt-search');
 
 const playHandler = (server, message, splitted) => {
   const songs = splitted;
   if (songs.length === 0) {
     return message.channel.send("Command usage: `#play childish gambino redbone` or `#play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg`")
   }
+
   botControls.joinChannel(server, message.member.voice.channel).then(connection => {
-    if (songs.length === 1 && isPlaylist(songs[0])) {
+    if (songs.length === 1 && isSpotifyPlaylist(songs[0])) {
+      getTracks(songs[0]).then(songsResults => {
+        const queueItems = server.queue.length
+        songsResults.forEach(songData => {
+          server.addSong({ name: `${songData.artists[0].name} - ${songData.name}` })
+        })
+        message.channel.send(`Added ${songsResults.length} songs to the queue.`);
+        if (queueItems === 0) {
+          songControls.playSong(server, message);
+          // message.channel.send(`Playing ${server.queue[0].name}. Let's get funky.`);
+        }
+      })
+    } else if (songs.length === 1 && isPlaylist(songs[0])) {
       const playlistURL = songs[0]
       ytpl(playlistURL).then(res => {
         const playlist = res.items;
         // add them to the queue
         const queueItems = server.queue.length
         playlist.forEach(song => {
-          server.addSong(song.shortUrl);
+          server.addSong({ url: song.shortUrl });
         })
         message.channel.send(`Added ${playlist.length} songs to the queue.`);
         if (queueItems === 0) {
-          songControls.playSong(server);
-          message.channel.send(`Playing ${server.queue[0]}. Let's get funky.`);
+          songControls.playSong(server, message);
         }
       })
     } else if (songs.length === 1 && ytdl.validateURL(songs[0])) {
       const song = songs[0]
       const queueItems = server.queue.length
-      server.addSong(song);
+      server.addSong({ url: song });
       if (queueItems === 0) {
-        songControls.playSong(server);
-        message.channel.send(`Playing ${server.queue[0]}. Let's get funky.`);
+        songControls.playSong(server, message);
       }
     } else if (songs.length === 1 && !ytdl.validateURL(songs[0])) {
       if (!process.env.YOUTUBE_KEY) return message.channel.send("Please enter a youtube API key to use this functionality.");
       // if it's not a youtube link
-      const opts = {
-        maxResults: 1,
-        key: process.env.YOUTUBE_KEY
-      };
-      youtubeSearch(songs[0].replace(' ', ','), opts, (err, results) => {
-        if (err) return console.log(err);
-        server.addConvert([results[0].link]);
+      yts(songs[0].replace(' ', ',')).then(results => {
+        server.addConvert([results.videos[0].url]);
         download(server.convertQueue[0], (error, songPaths) => {
           if (error) {
             return message.channel.send(error);
@@ -53,13 +61,13 @@ const playHandler = (server, message, splitted) => {
           // play the final file
           server.convertFinished();
           if (server.queue.length == 0) {
-            server.addSong(songPaths[0]);
-            songControls.playSong(server);
-            message.channel.send(`Playing ${results[0].link}. Let's get funky.`);
+            server.addSong({ url: songPaths[0] });
+            songControls.playSong(server, message);
           } else {
-            server.addSong(songPaths[0]);
+            server.addSong({ url: songPaths[0] });
             message.channel.send("Song mixed and added to queue.");
           }
+          message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
         })
       });
     } else {
@@ -78,11 +86,10 @@ const playHandler = (server, message, splitted) => {
             // play the final file
             server.convertFinished();
             if (server.queue.length == 0) {
-              server.addSong(songPath);
-              songControls.playSong(server);
-              message.channel.send("Let's get funky.");
+              server.addSong({ url: songPath });
+              songControls.playSong(server, message);
             } else {
-              server.addSong(songPath);
+              server.addSong({ url: songPath });
               message.channel.send("Song mixed and added to queue.");
             }
           }
