@@ -12,7 +12,7 @@ const validator = require('validator');
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
 
-const prefix = "#";
+const prefix = process.env.PREFIX || "#";
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -25,7 +25,6 @@ client.on("message", message => {
   const cleaned = validator.blacklist(message.content, blacklistedChars)
   const action = cleaned.match(new RegExp(`\\${prefix}\\w+`, 'i'))[0]
   let splitted = cleaned.replace(`${action} `, '').replace(action, '').split(', ');
-  console.log(blacklistedChars)
   if (splitted[0] === "") splitted = []
   // prefix +" " = action for switch statement
   // everything else = search terms
@@ -72,7 +71,7 @@ client.on("message", message => {
       stopHandler(server);
       break;
     }
-    case "#join": {
+    case `${prefix}join`: {
       if (!message.member.voice.channel) {
         return message.channel.send(
           "You must be in a channel to play the bot."
@@ -82,7 +81,7 @@ client.on("message", message => {
       botControls.joinChannel(server, message.member.voice.channel);
       break;
     }
-    case "#leave": {
+    case `${prefix}leave`: {
       if (!message.member.voice.channel) {
         return message.channel.send(
           "You must be in a channel to play the bot."
@@ -96,8 +95,12 @@ client.on("message", message => {
       botControls.leaveChannel(server, message.member.voice.channel);
       break;
     }
-    case "#help": {
+    case `${prefix}help`: {
       helpHandler(message);
+      break;
+    }
+    case `${prefix}queue`: {
+      console.log(server.queue, server.queue.length)
       break;
     }
   }

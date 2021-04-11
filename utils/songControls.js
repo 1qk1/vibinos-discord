@@ -1,3 +1,4 @@
+const ytdl = require('ytdl-core');
 
 const nextSong = (server) => {
   if (server.queue.length > 1) {
@@ -10,7 +11,13 @@ const nextSong = (server) => {
 
 const playSong = (server) => {
   const songPath = server.queue[0]
-  const dispatcher = server.connection.play(songPath).on("finish", () => {
+  let dispatcher
+  if (ytdl.validateURL(songPath)) {
+    dispatcher = server.connection.play(ytdl(songPath, { filter: 'audioonly' }))
+  } else {
+    dispatcher = server.connection.play(songPath)
+  }
+  dispatcher.on("finish", () => {
     nextSong(server);
   });
   server.dispatcher = dispatcher
