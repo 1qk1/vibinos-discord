@@ -18,7 +18,7 @@ const playSong = (server, message) => {
       dispatcher = server.connection.play(ytdl(results.videos[0].url, { filter: 'audioonly' }))
       message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
       dispatcher.on("finish", () => {
-        nextSong(server);
+        nextSong(server, message);
       });
       server.dispatcher = dispatcher
     })
@@ -31,7 +31,7 @@ const playSong = (server, message) => {
       dispatcher = server.connection.play(songPath)
     }
     dispatcher.on("finish", () => {
-      nextSong(server);
+      nextSong(server, message);
     });
 
     server.dispatcher = dispatcher
