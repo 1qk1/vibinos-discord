@@ -6,8 +6,9 @@ const songControls = require('../utils/songControls')
 const isPlaylist = require("is-playlist")
 const ytpl = require('ytpl');
 const { getTracks } = require("spotify-url-info");
-const isSpotifyPlaylist = require('../utils/isSpotifyPlaylist')
+const { isSpotifyPlaylist, getPlaylistID } = require('../utils/isSpotifyPlaylist')
 const yts = require('yt-search');
+const { getPlaylistTracks } = require('../utils/spotifyApi')
 
 const playHandler = (server, message, splitted) => {
   const songs = splitted;
@@ -17,10 +18,10 @@ const playHandler = (server, message, splitted) => {
 
   botControls.joinChannel(server, message.member.voice.channel).then(connection => {
     if (songs.length === 1 && isSpotifyPlaylist(songs[0])) {
-      getTracks(songs[0]).then(songsResults => {
+      getPlaylistTracks(getPlaylistID(songs[0])).then(songsResults => {
         const queueItems = server.queue.length
         songsResults.forEach(songData => {
-          server.addSong({ name: `${songData.artists[0].name} - ${songData.name}` })
+          server.addSong({ name: `${songData.track.artists[0].name} - ${songData.track.name}` })
         })
         message.channel.send(`Added ${songsResults.length} songs to the queue.`);
         if (queueItems === 0) {
