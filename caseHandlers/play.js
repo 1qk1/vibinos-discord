@@ -3,9 +3,7 @@ const download = require('../functions/download')
 const compileSongs = require('../functions/compileSongs')
 const botControls = require('../utils/botControls')
 const songControls = require('../utils/songControls')
-const isPlaylist = require("is-playlist")
 const ytpl = require('ytpl');
-const { getTracks } = require("spotify-url-info");
 const { isSpotifyPlaylist, getPlaylistID } = require('../utils/isSpotifyPlaylist')
 const yts = require('yt-search');
 const { getPlaylistTracks } = require('../utils/spotifyApi')
@@ -29,9 +27,11 @@ const playHandler = (server, message, splitted) => {
           // message.channel.send(`Playing ${server.queue[0].name}. Let's get funky.`);
         }
       })
-    } else if (songs.length === 1 && isPlaylist(songs[0])) {
+    } else if (songs.length === 1 && ytpl.validateID(songs[0])) {
       const playlistURL = songs[0]
-      ytpl(playlistURL).then(res => {
+      ytpl(playlistURL, {
+        limit: Infinity
+      }).then(res => {
         const playlist = res.items;
         // add them to the queue
         const queueItems = server.queue.length
