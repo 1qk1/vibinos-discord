@@ -50,6 +50,7 @@ const playHandler = (server, message, splitted) => {
       } else {
         server.addSong({ name: song });
       }
+      message.channel.send(`Added ${song} to the queue.`);
       if (queueItems === 0) {
         songControls.playSong(server, message);
       }
