@@ -1,7 +1,6 @@
 const ytdl = require('ytdl-core')
 const download = require('../functions/download')
 const compileSongs = require('../functions/compileSongs')
-const botControls = require('../utils/botControls')
 const songControls = require('../utils/songControls')
 const ytpl = require('ytpl');
 const { isSpotifyPlaylist, getPlaylistID } = require('../utils/isSpotifyPlaylist')
@@ -14,7 +13,7 @@ const playHandler = (server, message, splitted) => {
     return message.channel.send("Command usage: `#play childish gambino redbone` or `#play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg`")
   }
 
-  botControls.joinChannel(server, message.member.voice.channel).then(connection => {
+  server.joinChannel(message.member.voice.channel).then(connection => {
     if (songs.length === 1 && isSpotifyPlaylist(songs[0])) {
       getPlaylistTracks(getPlaylistID(songs[0])).then(songsResults => {
         const queueItems = server.queue.length
@@ -43,34 +42,17 @@ const playHandler = (server, message, splitted) => {
           songControls.playSong(server, message);
         }
       })
-    } else if (songs.length === 1 && ytdl.validateURL(songs[0])) {
+    } else if (songs.length === 1) {
       const song = songs[0]
       const queueItems = server.queue.length
-      server.addSong({ url: song });
+      if (ytdl.validateURL(song)) {
+        server.addSong({ url: song });
+      } else {
+        server.addSong({ name: song });
+      }
       if (queueItems === 0) {
         songControls.playSong(server, message);
       }
-    } else if (songs.length === 1 && !ytdl.validateURL(songs[0])) {
-      if (!process.env.YOUTUBE_KEY) return message.channel.send("Please enter a youtube API key to use this functionality.");
-      // if it's not a youtube link
-      yts(songs[0].replace(' ', ',')).then(results => {
-        server.addConvert([results.videos[0].url]);
-        download(server.convertQueue[0], (error, songPaths) => {
-          if (error) {
-            return message.channel.send(error);
-          }
-          // play the final file
-          server.convertFinished();
-          if (server.queue.length == 0) {
-            server.addSong({ url: songPaths[0] });
-            songControls.playSong(server, message);
-          } else {
-            server.addSong({ url: songPaths[0] });
-            message.channel.send("Song mixed and added to queue.");
-          }
-          message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
-        })
-      });
     } else {
       // download the files
       server.addConvert(songs);

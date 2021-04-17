@@ -7,15 +7,13 @@ const nextSong = (server, message) => {
     playSong(server, message)
   } else {
     stopSongs(server)
-    server.timeOut = setTimeout(() => message.member.voice.channel.leave(), 1000 * 60 * 10)
+    server.addTimer();
   }
 }
 
 const playSong = (server, message) => {
   const song = server.queue[0]
-  if (server.timeOut) {
-    clearTimeout(server.timeOut)
-  }
+  server.stopTimer();
   const songPath = song.url
   if (song.name) {
     yts(song.name).then(results => {

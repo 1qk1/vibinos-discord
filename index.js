@@ -5,7 +5,6 @@ const playHandler = require('./caseHandlers/play');
 const stopHandler = require('./caseHandlers/stop');
 const skipHandler = require('./caseHandlers/skip');
 const helpHandler = require('./caseHandlers/help');
-const botControls = require('./utils/botControls');
 const { state } = require('./utils/servers');
 const validator = require('validator');
 
@@ -77,7 +76,7 @@ client.on("message", message => {
         );
       }
       message.channel.send("Coming.");
-      botControls.joinChannel(server, message.member.voice.channel);
+      server.joinChannel(message.member.voice.channel)
       break;
     }
     case `${prefix}leave`: {
@@ -91,7 +90,7 @@ client.on("message", message => {
       }
       stopHandler(server);
       message.channel.send("Bye bye.");
-      botControls.leaveChannel(server, message.member.voice.channel);
+      server.leaveChannel(message.member.voice.channel);
       break;
     }
     case `${prefix}help`: {
