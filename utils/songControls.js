@@ -46,7 +46,7 @@ const stopSongs = (server) => {
   // clear convertQueue queue
   if (server.dispatcher) {
     server.queue = [];
-    server.dispatcher.pause();
+    server.dispatcher.end();
     server.convertQueue = [];
   }
 }
