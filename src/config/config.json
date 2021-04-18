@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "vibinos_dev_user",
+    "password": "vibinos_dev_password",
+    "database": "vibinos_dev_db",
+    "host": "db",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "bigNumberStrings": true
+    }
+  },
+  "test": {
+    "dialect": "postgres",
+    "dialectOptions": {
+      "bigNumberStrings": true
+    },
+    "use_env_variable": "DATABASE_URL"
+  },
+  "production": {
+    "dialect": "postgres",
+    "dialectOptions": {
+      "bigNumberStrings": true
+    },
+    "use_env_variable": "DATABASE_URL"
+  }
+}

@@ -5,6 +5,25 @@ services:
     environment:
       NODE_ENV: development
     command: npm run dev
+    restart: always
     volumes:
       - .:/home/app/vibinos
       - /home/app/vibinos/node_modules
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    restart: always
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "vibinos_dev_user"
+      POSTGRES_PASSWORD: "vibinos_dev_password"
+      POSTGRES_DB: "vibinos_dev_db"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+volumes:
+  postgres-volume:

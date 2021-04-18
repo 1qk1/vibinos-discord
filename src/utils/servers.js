@@ -1,5 +1,9 @@
+const { Guild, Playlist } = require('../models')
+const songControls = require('../utils/songControls')
+
 class Server {
   constructor({
+    id,
     convertQueue = [],
     queue = [],
     fullPlaylist = [],
@@ -10,6 +14,7 @@ class Server {
     timeOut = null,
     shuffle = false
   } = {}) {
+    this.id = id
     this.convertQueue = convertQueue
     this.queue = queue
     this.fullPlaylist = fullPlaylist
@@ -19,6 +24,8 @@ class Server {
     this.botChannel = botChannel
     this.timeOut = timeOut
     this.shuffle = shuffle
+    this.savePlaylist.bind(this)
+    this.playPlaylist.bind(this)
   }
   addSong(song) {
     this.queue.push(song)
@@ -74,6 +81,35 @@ class Server {
     }
     message.channel.send(`Shuffle is now ${STATEMAP[newShuffle]}`)
   }
+  savePlaylist = async (playlistName, message) => {
+    const [guild, created] = await Guild.findOrCreate({
+      where: { guild_id: this.id }
+    })
+    const playlist = await Playlist.create({
+      name: playlistName,
+      tracks: this.fullPlaylist,
+      guild_instance: String(guild.guild_id)
+    })
+    message.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.fullPlaylist.length} tracks.`)
+  }
+  playPlaylist = async (playlistName, message) => {
+    const playlist = await Playlist.findOne({ where: { name: playlistName } });
+    const queueItems = this.queue.length
+    this.queue = [...this.queue, ...playlist.tracks]
+    this.fullPlaylist = [...this.fullPlaylist, ...playlist.tracks]
+    message.channel.send(`Added tracks from playlist \`${playlist.name}\` to the queue`)
+    await this.joinChannel(message.member.voice.channel)
+    if (queueItems === 0) {
+      songControls.nextSong(this, message);
+    }
+  }
+  showPlaylists = async (message) => {
+    const playlists = await Playlist.findAll({ where: { guild_instance: String(this.id) } });
+    message.channel.send(`Here are the currently saved playlists: `)
+    playlists.forEach(pl => {
+      message.channel.send(`\`${pl.name}\` with ${pl.tracks.length} tracks.`)
+    })
+  }
 }
 
 class ServerState {
@@ -83,7 +119,7 @@ class ServerState {
   }
 
   add(serverID, serverOptions) {
-    this.servers[serverID] = new Server(serverOptions)
+    this.servers[serverID] = new Server({ id: serverID, ...serverOptions })
   }
 
   get(serverID) {

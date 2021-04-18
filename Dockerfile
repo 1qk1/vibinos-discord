@@ -12,4 +12,8 @@ RUN npm install --silent --progress=false
 
 COPY . $HOME/vibinos
 
+COPY bin/docker-entrypoint.sh /usr/local/bin
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+
 CMD ["npm", "start"]

@@ -7,6 +7,7 @@ const skipHandler = require('./caseHandlers/skip');
 const helpHandler = require('./caseHandlers/help');
 const { state } = require('./utils/servers');
 const validator = require('validator');
+const { sequelize } = require('./utils/db')
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
 
@@ -16,7 +17,6 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity(`${prefix}help and ${prefix}play`, { type: "LISTENING" });
 });
-
 
 client.on("message", message => {
   if (message.content[0] !== prefix) return;
@@ -101,8 +101,16 @@ client.on("message", message => {
       server.toggleShuffle(message);
       break;
     }
-    case `${prefix}queue`: {
-      console.log(server.queue, server.queue.length)
+    case `${prefix}sp`: {
+      server.savePlaylist(splitted[0], message)
+      break;
+    }
+    case `${prefix}pp`: {
+      server.playPlaylist(splitted[0], message)
+      break;
+    }
+    case `${prefix}playlists`: {
+      server.showPlaylists(message)
       break;
     }
   }
