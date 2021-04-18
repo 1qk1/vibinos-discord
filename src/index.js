@@ -7,7 +7,7 @@ const skipHandler = require('./caseHandlers/skip');
 const helpHandler = require('./caseHandlers/help');
 const { state } = require('./utils/servers');
 const validator = require('validator');
-const { sequelize } = require('./utils/db')
+const { sequelize } = require('./models')
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
 

@@ -1,5 +1,6 @@
 const { Guild, Playlist } = require('../models')
 const songControls = require('../utils/songControls')
+const { Op } = require("sequelize");
 
 class Server {
   constructor({
@@ -82,22 +83,41 @@ class Server {
     message.channel.send(`Shuffle is now ${STATEMAP[newShuffle]}`)
   }
   savePlaylist = async (playlistName, message) => {
+    if (!this.fullPlaylist.length > 0) {
+      return message.channel.send('There is nothing to save.')
+    }
+    if (!playlistName) {
+      return message.channel.send('Provide a name for the playlist.')
+    }
     const [guild, created] = await Guild.findOrCreate({
       where: { guild_id: this.id }
     })
-    const playlist = await Playlist.create({
-      name: playlistName,
-      tracks: this.fullPlaylist,
-      guild_instance: String(guild.guild_id)
-    })
+    let playlist
+
+    try {
+      playlist = await Playlist.create({
+        name: playlistName,
+        tracks: this.fullPlaylist,
+        guild_instance: String(guild.guild_id)
+      })
+    } catch (error) {
+      return message.channel.send(`There was an error saving this playlist. You might already have a playlist saved with that name.`)
+    }
     message.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.fullPlaylist.length} tracks.`)
   }
   playPlaylist = async (playlistName, message) => {
-    const playlist = await Playlist.findOne({ where: { name: playlistName } });
+    const playlist = await Playlist.findOne({
+      where: {
+        [Op.and]: {
+          name: playlistName,
+          guild_instance: this.id
+        }
+      }
+    });
     const queueItems = this.queue.length
     this.queue = [...this.queue, ...playlist.tracks]
     this.fullPlaylist = [...this.fullPlaylist, ...playlist.tracks]
-    message.channel.send(`Added tracks from playlist \`${playlist.name}\` to the queue`)
+    message.channel.send(`Added \`${playlist.tracks.length}\`tracks from playlist \`${playlist.name}\` to the queue`)
     await this.joinChannel(message.member.voice.channel)
     if (queueItems === 0) {
       songControls.nextSong(this, message);

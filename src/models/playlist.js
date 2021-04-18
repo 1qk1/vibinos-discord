@@ -2,6 +2,8 @@
 const {
   Model
 } = require('sequelize');
+const { Op } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class Playlist extends Model {
     /**
@@ -16,8 +18,22 @@ module.exports = (sequelize, DataTypes) => {
   Playlist.init({
     name: {
       type: DataTypes.STRING(50),
-      unique: true,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        async uniqueNameInGuild(value) {
+          const resultsNo = await Playlist.findAndCountAll({
+            where: {
+              [Op.and]: [
+                { name: value },
+                { guild_instance: this.guild_instance }
+              ]
+            }
+          })
+          if (resultsNo.count) {
+            throw new Error('Duplicate playlist name in this guild.')
+          }
+        }
+      }
     },
     tracks: {
       type: DataTypes.ARRAY(DataTypes.JSONB),
