@@ -1,0 +1,10 @@
+version: '2'
+services:
+  app:
+    build: .
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+    volumes:
+      - .:/home/app/vibinos
+      - /home/app/vibinos/node_modules
