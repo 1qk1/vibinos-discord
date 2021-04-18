@@ -2,7 +2,7 @@ const ytdl = require('ytdl-core');
 const yts = require('yt-search');
 
 const nextSong = (server, message) => {
-  if (server.queue.length > 1) {
+  if (server.queue.length > 0) {
     let songIndex = 0
     if (server.shuffle) {
       songIndex = Math.floor(Math.random() * server.queue.length)
