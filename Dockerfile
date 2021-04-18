@@ -2,7 +2,7 @@ FROM node:14
 
 ENV HOME=/home/app
 
-RUN apt-get update && apt-get install htop
+RUN apt-get update && apt-get install ffmpeg -y
 
 COPY package.json package-lock.json $HOME/vibinos/
 
