@@ -21,7 +21,7 @@ const playOne = (server, message, songs) => {
       server.convertFinished();
       if (server.queue.length == 0) {
         server.addSong(songPaths[0]);
-        songControls.playSong(server, message);
+        songControls.nextSong(server, message);
         message.channel.send(`Playing ${results[0].link}. Let's get funky.`);
       } else {
         server.addSong(songPaths[0]);
@@ -47,7 +47,7 @@ const playMany = (server, message, songs) => {
         server.convertFinished();
         if (server.queue.length == 0) {
           server.addSong(songPath);
-          songControls.playSong(server, message);
+          songControls.nextSong(server, message);
           message.channel.send("Let's get funky.");
         } else {
           server.addSong(songPath);
