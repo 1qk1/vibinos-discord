@@ -2,22 +2,27 @@ class Server {
   constructor({
     convertQueue = [],
     queue = [],
+    fullPlaylist = [],
     dispatcher = null,
     connection = null,
     channel = null,
     botChannel = null,
-    timeOut = null
+    timeOut = null,
+    shuffle = false
   } = {}) {
     this.convertQueue = convertQueue
     this.queue = queue
+    this.fullPlaylist = fullPlaylist
     this.dispatcher = dispatcher
     this.connection = connection
     this.channel = channel
     this.botChannel = botChannel
     this.timeOut = timeOut
+    this.shuffle = shuffle
   }
   addSong(song) {
     this.queue.push(song)
+    this.fullPlaylist.push(song)
     return this.queue;
   }
   addConvert(songArray) {
@@ -59,6 +64,15 @@ class Server {
       clearTimeout(this.timeOut)
     }
     return;
+  }
+  toggleShuffle(message) {
+    const newShuffle = !this.shuffle
+    this.shuffle = newShuffle
+    const STATEMAP = {
+      true: "on",
+      false: "off"
+    }
+    message.channel.send(`Shuffle is now ${STATEMAP[newShuffle]}`)
   }
 }
 

@@ -97,6 +97,10 @@ client.on("message", message => {
       helpHandler(message);
       break;
     }
+    case `${prefix}shuffle`: {
+      server.toggleShuffle(message);
+      break;
+    }
     case `${prefix}queue`: {
       console.log(server.queue, server.queue.length)
       break;

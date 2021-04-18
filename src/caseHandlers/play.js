@@ -22,7 +22,7 @@ const playHandler = (server, message, splitted) => {
         })
         message.channel.send(`Added ${songsResults.length} songs to the queue.`);
         if (queueItems === 0) {
-          songControls.playSong(server, message);
+          songControls.nextSong(server, message);
           // message.channel.send(`Playing ${server.queue[0].name}. Let's get funky.`);
         }
       })
@@ -39,7 +39,7 @@ const playHandler = (server, message, splitted) => {
         })
         message.channel.send(`Added ${playlist.length} songs to the queue.`);
         if (queueItems === 0) {
-          songControls.playSong(server, message);
+          songControls.nextSong(server, message);
         }
       })
     } else if (songs.length === 1) {
@@ -52,7 +52,7 @@ const playHandler = (server, message, splitted) => {
       }
       message.channel.send(`Added ${song} to the queue.`);
       if (queueItems === 0) {
-        songControls.playSong(server, message);
+        songControls.nextSong(server, message);
       }
     } else {
       // download the files
@@ -71,7 +71,7 @@ const playHandler = (server, message, splitted) => {
             server.convertFinished();
             if (server.queue.length == 0) {
               server.addSong({ url: songPath });
-              songControls.playSong(server, message);
+              songControls.nextSong(server, message);
             } else {
               server.addSong({ url: songPath });
               message.channel.send("Song mixed and added to queue.");

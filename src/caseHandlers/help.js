@@ -4,7 +4,8 @@ const helpHandler = (message) => {
   const helpMessages = [
     ["#play", "Play a song from youtube, a youtube playlist or a spotify playlist. It can search by name or you can provide it with the link"],
     ["#stop", "Stops all playing songs in the queue."],
-    ["#skip, #next", "Skips to the next song in the queue."],
+    ["#skip", "Skips to the next song in the queue."],
+    ["#shuffle", "Turns shuffle on or off."],
     ["#join", "Makes the bot join your voice channel."],
     ["#leave", "Makes the bot leave your voice channel."],
     ["#help", "This command."],
