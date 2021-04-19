@@ -1,6 +1,6 @@
-const { Guild, Playlist } = require('../models')
+const Playlist = require('../models/playlist')
+const Guild = require('../models/guild')
 const songControls = require('../utils/songControls')
-const { Op } = require("sequelize");
 
 class Server {
   constructor({
@@ -89,30 +89,41 @@ class Server {
     if (!playlistName) {
       return message.channel.send('Provide a name for the playlist.')
     }
-    const [guild, created] = await Guild.findOrCreate({
-      where: { guild_id: this.id }
+    let guild
+
+    guild = await Guild.findOne({
+      guild_id: this.id
     })
+
+    if (!guild) {
+      guild = await Guild.create({
+        guild_id: this.id
+      })
+    }
+
     let playlist
 
     try {
       playlist = await Playlist.create({
         name: playlistName,
         tracks: this.fullPlaylist,
-        guild_instance: String(guild.guild_id)
+        guild_instance: guild
       })
     } catch (error) {
+      console.log(error)
       return message.channel.send(`There was an error saving this playlist. You might already have a playlist saved with that name.`)
     }
     message.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.fullPlaylist.length} tracks.`)
   }
   playPlaylist = async (playlistName, message) => {
+    const guild = await Guild.findOne({
+      guild_id: this.id
+    })
     const playlist = await Playlist.findOne({
-      where: {
-        [Op.and]: {
-          name: playlistName,
-          guild_instance: this.id
-        }
-      }
+      $and: [
+        { name: playlistName },
+        { guild_instance: guild }
+      ]
     });
     const queueItems = this.queue.length
     this.queue = [...this.queue, ...playlist.tracks]
@@ -124,7 +135,10 @@ class Server {
     }
   }
   showPlaylists = async (message) => {
-    const playlists = await Playlist.findAll({ where: { guild_instance: String(this.id) } });
+    const guild = await Guild.findOne({
+      guild_id: this.id
+    })
+    const playlists = await Playlist.find({ guild_instance: guild });
     message.channel.send(`Here are the currently saved playlists: `)
     playlists.forEach(pl => {
       message.channel.send(`\`${pl.name}\` with ${pl.tracks.length} tracks.`)

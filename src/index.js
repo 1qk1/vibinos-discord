@@ -7,11 +7,20 @@ const skipHandler = require('./caseHandlers/skip');
 const helpHandler = require('./caseHandlers/help');
 const { state } = require('./utils/servers');
 const validator = require('validator');
-const { sequelize } = require('./models')
+const mongoose = require('mongoose');
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
 
 const prefix = process.env.PREFIX || "#";
+
+mongoose.connect(process.env.MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true
+}).then(() => {
+  console.log('connected to database successfully')
+});
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
