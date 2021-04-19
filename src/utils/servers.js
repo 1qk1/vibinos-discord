@@ -125,13 +125,17 @@ class Server {
         { guild_instance: guild }
       ]
     });
-    const queueItems = this.queue.length
-    this.queue = [...this.queue, ...playlist.tracks]
-    this.fullPlaylist = [...this.fullPlaylist, ...playlist.tracks]
-    message.channel.send(`Added \`${playlist.tracks.length}\`tracks from playlist \`${playlist.name}\` to the queue`)
-    await this.joinChannel(message.member.voice.channel)
-    if (queueItems === 0) {
-      songControls.nextSong(this, message);
+    if (playlist) {
+      const queueItems = this.queue.length
+      this.queue = [...this.queue, ...playlist.tracks]
+      this.fullPlaylist = [...this.fullPlaylist, ...playlist.tracks]
+      message.channel.send(`Added \`${playlist.tracks.length}\`tracks from playlist \`${playlist.name}\` to the queue`)
+      await this.joinChannel(message.member.voice.channel)
+      if (queueItems === 0) {
+        songControls.nextSong(this, message);
+      }
+    } else {
+      return message.channel.send(`Playlist not found`)
     }
   }
   showPlaylists = async (message) => {
