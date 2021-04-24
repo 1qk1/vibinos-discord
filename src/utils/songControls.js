@@ -21,7 +21,7 @@ const playSong = (server, message, song) => {
   const songPath = song.url
   if (song.name) {
     yts(song.name).then(results => {
-      dispatcher = server.connection.play(ytdl(results.videos[0].url, { filter: 'audioonly' }))
+      dispatcher = server.connection.play(ytdl(results.videos[0].url, { filter: 'audioonly' }), { bitrate: 64 })
       message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
       dispatcher.on("finish", () => {
         nextSong(server, message);
@@ -31,10 +31,10 @@ const playSong = (server, message, song) => {
   } else {
     let dispatcher
     if (ytdl.validateURL(songPath)) {
-      dispatcher = server.connection.play(ytdl(songPath, { filter: 'audioonly' }))
+      dispatcher = server.connection.play(ytdl(songPath, { filter: 'audioonly' }), { bitrate: 64 })
       message.channel.send(`Playing ${song.url}. Let's get funky.`);
     } else {
-      dispatcher = server.connection.play(songPath)
+      dispatcher = server.connection.play(songPath, { bitrate: 64 })
     }
     dispatcher.on("finish", () => {
       nextSong(server, message);
