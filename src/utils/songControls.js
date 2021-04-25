@@ -19,6 +19,7 @@ const nextSong = (server, message) => {
 const playSong = (server, message, song) => {
   server.stopTimer();
   const songPath = song.url
+  server.playing = true
   if (song.name) {
     yts(song.name).then(results => {
       dispatcher = server.connection.play(ytdl(results.videos[0].url, { filter: 'audioonly' }), { bitrate: 64 })
@@ -52,6 +53,7 @@ const stopSongs = (server) => {
     server.fullPlaylist = [];
     server.dispatcher.end();
     server.convertQueue = [];
+    server.playing = false;
   }
 }
 

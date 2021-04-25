@@ -25,6 +25,7 @@ class Server {
     this.botChannel = botChannel
     this.timeOut = timeOut
     this.shuffle = shuffle
+    this.playing = false
     this.savePlaylist.bind(this)
     this.playPlaylist.bind(this)
   }

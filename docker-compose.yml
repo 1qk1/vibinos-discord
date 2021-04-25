@@ -5,7 +5,6 @@ services:
     environment:
       NODE_ENV: development
     command: npm run dev
-    restart: always
     volumes:
       - .:/home/app/vibinos
       - /home/app/vibinos/node_modules
@@ -13,13 +12,11 @@ services:
       - mongo
   mongo:
     image: mongo:3.6
-    restart: always
     volumes:
       - mongo-volume:/data/db
   
   mongo-express:
     image: mongo-express
-    restart: always
     ports:
       - 8081:8081
   
