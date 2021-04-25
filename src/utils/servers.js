@@ -152,9 +152,10 @@ class Server {
 }
 
 class ServerState {
-  constructor(client) {
+  constructor() {
     this.servers = {}
-    this.client = client
+    this.client = null
+    this.prefix = process.env.PREFIX || "#";
   }
 
   add(serverID, serverOptions) {

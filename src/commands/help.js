@@ -1,34 +1,26 @@
 const { MessageEmbed } = require("discord.js");
+const { state } = require('../utils/servers')
 
 module.exports = {
-  name: 'help',
-  description: 'Now playing command.',
-  aliases: ['h'],
+  name: "help",
+  aliases: ["h"],
+  description: "Display all commands and descriptions",
   execute(server, message) {
-    const helpMessages = [
-      ["#play", "Play a song from youtube, a youtube playlist or a spotify playlist. It can search by name or you can provide it with the link"],
-      ["#stop", "Stops all playing songs in the queue."],
-      ["#skip", "Skips to the next song in the queue."],
-      ["#shuffle", "Turns shuffle on or off."],
-      ["#pp `name`", "Saves the current playing songs in a new playlist named `name`."],
-      ["#sp `name`", "Plays a previously saved playlist."],
-      ["#playlists", "Shows all saved playlists."],
-      ["#join", "Makes the bot join your voice channel."],
-      ["#leave", "Makes the bot leave your voice channel."],
-      ["#help", "This command."],
-    ]
+    let commands = state.client.commands.array();
+
     let helpEmbed = new MessageEmbed()
       .setTitle(`${message.client.user.username} Help`)
-      .setDescription("List of all commands")
-      .setColor("#F8AA2A");
+      .setDescription("List of all the commands")
+      .setColor("#a689e0");
 
-    helpMessages.forEach(([command, description]) => {
+    commands.forEach((cmd) => {
       helpEmbed.addField(
-        `**${command}**`,
-        `${description}`,
+        `**${state.prefix}${cmd.name} ${cmd.aliases ? `(${cmd.aliases})` : ""}**`,
+        `${cmd.description}`,
         true
       );
     });
+
     helpEmbed.setTimestamp();
 
     return message.channel.send(helpEmbed).catch(console.error);

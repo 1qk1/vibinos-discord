@@ -5,14 +5,14 @@ const songControls = require('../utils/songControls')
 const ytpl = require('ytpl');
 const { isSpotifyPlaylist, getPlaylistID } = require('../utils/isSpotifyPlaylist')
 const { getPlaylistTracks } = require('../utils/spotifyApi')
-const yts = require('yt-search');
+const { state } = require('../utils/servers')
 
 module.exports = {
   name: 'play',
-  description: 'Plays a song or a playlist.',
+  description: `Plays a mix if there are 2 youtube songs (\`${state.prefix}play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg\`), a song or a playlist from youtube/spotify.`,
   needsVoiceChannel: true,
   args: true,
-  usage: '`#play childish gambino redbone` or \n`#play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg`',
+  usage: `\`${state.prefix}play childish gambino redbone\` or \n\`${state.prefix}play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg\``,
   execute(server, message, args) {
     const songs = args;
 

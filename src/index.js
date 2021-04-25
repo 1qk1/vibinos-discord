@@ -8,8 +8,6 @@ const mongoose = require('mongoose');
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
 
-const prefix = process.env.PREFIX || "#";
-
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -21,13 +19,13 @@ mongoose.connect(process.env.MONGO_URL, {
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  client.user.setActivity(`${prefix}help and ${prefix}play`, { type: "LISTENING" });
+  client.user.setActivity(`${state.prefix}help and ${state.prefix}play`, { type: "LISTENING" });
 });
 
 client.on("message", message => {
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!message.content.startsWith(state.prefix) || message.author.bot) return;
 
-  const args = validator.blacklist(message.content.slice(prefix.length), blacklistedChars).split(/ +/);
+  const args = validator.blacklist(message.content.slice(state.prefix.length), blacklistedChars).split(/ +/);
   const commandName = args.shift().toLowerCase();
   const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 

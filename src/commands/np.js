@@ -2,7 +2,8 @@
 
 module.exports = {
   name: 'np',
-  description: 'Now playing command.',
+  aliases: ['playing'],
+  description: 'Show the currently playing song.',
   execute(server, message) {
     return;
   }
