@@ -72,23 +72,7 @@ module.exports = {
         })
       }
       else {
-        const song = songs.join(' ')
-        const queueItems = server.queue.length
-        if (ytdl.validateURL(song)) {
-          server.addSong({ url: song });
-        } else {
-          server.addSong({ name: song });
-        }
-        if (queueItems === 0 && !server.playing) {
-          songControls.nextSong(server, message);
-        } else {
-          message.channel.send({
-            embed: {
-              color: "#a689e0",
-              description: `Added \`${song}\` to the queue.`,
-            }
-          });
-        }
+        return message.channel.send("Command not recognized.");
       }
     })
   }
