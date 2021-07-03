@@ -6,6 +6,7 @@ const ytpl = require('ytpl');
 const { isSpotifyPlaylist, getPlaylistID } = require('../utils/isSpotifyPlaylist')
 const { getPlaylistTracks } = require('../utils/spotifyApi')
 const { state } = require('../utils/servers')
+const yts = require('yt-search');
 
 module.exports = {
   name: 'play',
@@ -45,34 +46,25 @@ module.exports = {
             songControls.nextSong(server, message);
           }
         })
-      } else if (songs.length === 2 && ytpl.validateID(songs[0]) && ytpl.validateID(songs[1])) {
-        // download the files
-        server.addConvert(songs);
-        download(server.convertQueue[0], (error, songPaths) => {
-          if (error) {
-            return message.channel.send(error);
-          }
-          // compile them together
-          compileSongs(songPaths, (error, songPath) => {
-            if (error) {
-              // console.log(error)
-              return message.channel.send("There was an error and couldn't play the song.");
-            } else {
-              // play the final file
-              server.convertFinished();
-              if (server.queue.length === 0 && !server.playing) {
-                server.addSong({ url: songPath });
-                songControls.nextSong(server, message);
-              } else {
-                server.addSong({ url: songPath });
-                message.channel.send("Song mixed and added to queue.");
-              }
-            }
-          });
-        })
       }
       else {
-        return message.channel.send("Command not recognized.");
+        const song = songs.join(' ')
+        const queueItems = server.queue.length
+        if (ytdl.validateURL(song)) {
+          server.addSong({ url: song });
+        } else {
+          server.addSong({ name: song });
+        }
+        if (queueItems === 0 && !server.playing) {
+          songControls.nextSong(server, message);
+        } else {
+          message.channel.send({
+            embed: {
+              color: "#a689e0",
+              description: `Added \`${song}\` to the queue.`,
+            }
+          });
+        }
       }
     })
   }
