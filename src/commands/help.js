@@ -1,12 +1,13 @@
 const { MessageEmbed } = require("discord.js");
 const { state } = require('../utils/servers')
+const client = require('../utils/client')
 
 module.exports = {
   name: "help",
   aliases: ["h"],
   description: "Display all commands and descriptions",
   execute(server, message) {
-    let commands = state.client.commands.array();
+    let commands = client.commands.array();
 
     let helpEmbed = new MessageEmbed()
       .setTitle(`${message.client.user.username} Help`)
