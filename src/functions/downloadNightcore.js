@@ -10,9 +10,9 @@ const ffmpeg = require('fluent-ffmpeg')
 const downloadNightcore = (songURL, cb) => {
   const songID = ytdl.getVideoID(songURL)
   const songPath = path.join(__dirname, '../nightcore', `${songID}.mp3`)
-  // if (fs.existsSync(songPath)) {
-  //   return cb(null, songPath)
-  // }
+  if (fs.existsSync(songPath)) {
+    return cb(null, songPath)
+  }
   const stream = ytdl(songURL, { quality: 'highestaudio' })
   ffmpeg({ source: stream }).audioFilters(
     'asetrate=48000*1.21',
