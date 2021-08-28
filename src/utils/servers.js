@@ -14,7 +14,8 @@ class Server {
     botChannel = null,
     timeOut = null,
     shuffle = false,
-    nightcore = false
+    nightcore = false,
+    quality = 64
   } = {}) {
     this.id = id
     this.convertQueue = convertQueue
@@ -28,6 +29,7 @@ class Server {
     this.shuffle = shuffle
     this.nightcore = nightcore
     this.playing = false
+    this.quality = quality
     this.savePlaylist.bind(this)
     this.playPlaylist.bind(this)
   }
@@ -149,6 +151,23 @@ class Server {
       return message.channel.send(`Playlist not found`)
     }
   }
+  changeQuality = async (quality, message) => {
+    let guild = await Guild.findOne({
+      guild_id: this.id
+    })
+
+    if (!guild) {
+      guild = await Guild.create({
+        guild_id: this.id,
+        quality: quality
+      })
+    }
+    guild = await Guild.findOneAndUpdate({
+      guild_id: this.id
+    }, { quality })
+    this.quality = quality
+    return message.channel.send(`Quality changed to ${guild.quality}kbps.`);
+  }
   showPlaylists = async (message) => {
     const guild = await Guild.findOne({
       guild_id: this.id
@@ -163,9 +182,17 @@ class Server {
 
 class ServerState {
   constructor() {
-    this.servers = {}
-    this.client = null
-    this.prefix = process.env.PREFIX || "#";
+    Guild.find().then(guilds => {
+      this.servers = {}
+      guilds.forEach(guild => {
+        this.servers[guild.guild_id] = new Server({
+          id: guild.guild_id,
+          quality: guild.quality,
+        })
+      })
+      this.client = null
+      this.prefix = process.env.PREFIX || "#"
+    })
   }
 
   add(serverID, serverOptions) {

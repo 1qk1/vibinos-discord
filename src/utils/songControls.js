@@ -37,10 +37,10 @@ const playSong = (server, message, song) => {
           fmt: "mp3",
           encoderArgs: filters.nightcore[server.nightcore - 1]
         })
-        dispatcher = server.connection.play(stream, { bitrate: 64 })
+        dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(ytdl(results.videos[0].url, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: 64 })
+        dispatcher = server.connection.play(ytdl(results.videos[0].url, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
       }
       dispatcher.on("finish", () => {
@@ -58,14 +58,14 @@ const playSong = (server, message, song) => {
           fmt: "mp3",
           encoderArgs: filters.nightcore[server.nightcore - 1]
         })
-        dispatcher = server.connection.play(stream, { bitrate: 64 })
+        dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(ytdl(songPath, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: 64 })
+        dispatcher = server.connection.play(ytdl(songPath, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${song.url}. Let's get funky.`);
       }
     } else {
-      dispatcher = server.connection.play(songPath, { bitrate: 64 })
+      dispatcher = server.connection.play(songPath, { bitrate: server.quality || 64 })
     }
     dispatcher.on("finish", () => {
       nextSong(server, message);
