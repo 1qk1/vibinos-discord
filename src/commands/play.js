@@ -14,10 +14,10 @@ module.exports = {
   needsVoiceChannel: true,
   args: true,
   usage: `\`${state.prefix}play childish gambino redbone\` or \n\`${state.prefix}play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg\``,
-  execute(server, message, args) {
+  execute: async (server, message, args) => {
     const songs = args;
 
-    server.joinChannel(message.member.voice.channel).then(connection => {
+    server.joinChannel(message.member.voice.channel).then(async connection => {
       if (songs.length === 1 && isSpotifyPlaylist(songs[0])) {
         getPlaylistTracks(getPlaylistID(songs[0])).then(songsResults => {
           const queueItems = server.queue.length
@@ -53,7 +53,8 @@ module.exports = {
         if (ytdl.validateURL(song)) {
           server.addSong({ url: song });
         } else {
-          server.addSong({ name: song });
+          const results = await yts(song);
+          server.addSong({ url: results.videos[0].url });
         }
         if (queueItems === 0 && !server.playing) {
           songControls.nextSong(server, message);

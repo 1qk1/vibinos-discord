@@ -85,14 +85,13 @@ class Server {
     }
     message.channel.send(`Shuffle is now ${STATEMAP[newShuffle]}`)
   }
-  toggleNightcore(message) {
-    const newNightcore = !this.nightcore
-    this.nightcore = newNightcore
-    const STATEMAP = {
-      true: "on",
-      false: "off"
+  setNightcore(nightcoreLevel, message) {
+    this.nightcore = nightcoreLevel
+    if (nightcoreLevel === false) {
+      return message.channel.send(`Nightcore mode is now off`)
+    } else {
+      return message.channel.send(`Nightcore mode is now on level ${nightcoreLevel}`)
     }
-    message.channel.send(`Nightcore mode is now ${STATEMAP[newNightcore]}`)
   }
   savePlaylist = async (playlistName, message) => {
     if (!this.fullPlaylist.length > 0) {
