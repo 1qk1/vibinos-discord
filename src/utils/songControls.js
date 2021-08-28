@@ -19,7 +19,6 @@ const nextSong = (server, message) => {
 
 const playSong = (server, message, song) => {
   server.stopTimer();
-  server.dispatcher.end();
   const songPath = song.url
   server.playing = true
   if (song.name) {
