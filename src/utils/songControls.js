@@ -31,7 +31,6 @@ const playSong = (server, message, song) => {
   if (song.name) {
     yts(song.name).then(results => {
       let dispatcher
-      console.log(server.nightcore)
       if (server.nightcore) {
         const stream = dytdl(results.videos[0].url, {
           quality: "highestaudio",
