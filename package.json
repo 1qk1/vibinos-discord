@@ -22,6 +22,7 @@
     "async": "^3.2.0",
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
+    "fluent-ffmpeg": "^2.1.2",
     "libsodium-wrappers": "^0.7.9",
     "mongoose": "^5.12.14",
     "nanoid": "^3.1.23",
@@ -32,7 +33,7 @@
     "validator": "^13.6.0",
     "youtube-search": "^1.1.6",
     "yt-search": "^2.9.0",
-    "ytdl-core": "^4.8.3",
+    "ytdl-core": "^4.9.1",
     "ytpl": "^2.2.1"
   },
   "devDependencies": {

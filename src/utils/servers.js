@@ -13,7 +13,8 @@ class Server {
     channel = null,
     botChannel = null,
     timeOut = null,
-    shuffle = false
+    shuffle = false,
+    nightcore = false
   } = {}) {
     this.id = id
     this.convertQueue = convertQueue
@@ -25,6 +26,7 @@ class Server {
     this.botChannel = botChannel
     this.timeOut = timeOut
     this.shuffle = shuffle
+    this.nightcore = nightcore
     this.playing = false
     this.savePlaylist.bind(this)
     this.playPlaylist.bind(this)
@@ -82,6 +84,15 @@ class Server {
       false: "off"
     }
     message.channel.send(`Shuffle is now ${STATEMAP[newShuffle]}`)
+  }
+  toggleNightcore(message) {
+    const newNightcore = !this.nightcore
+    this.nightcore = newNightcore
+    const STATEMAP = {
+      true: "on",
+      false: "off"
+    }
+    message.channel.send(`Nightcore mode is now ${STATEMAP[newNightcore]}`)
   }
   savePlaylist = async (playlistName, message) => {
     if (!this.fullPlaylist.length > 0) {

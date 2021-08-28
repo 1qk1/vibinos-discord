@@ -1,5 +1,6 @@
 const ytdl = require('ytdl-core');
 const yts = require('yt-search');
+const downloadNightcore = require('../functions/downloadNightcore')
 
 const nextSong = (server, message) => {
   if (server.queue.length > 0) {
@@ -22,18 +23,41 @@ const playSong = (server, message, song) => {
   server.playing = true
   if (song.name) {
     yts(song.name).then(results => {
-      dispatcher = server.connection.play(ytdl(results.videos[0].url, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: 64 })
-      message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
-      dispatcher.on("finish", () => {
-        nextSong(server, message);
-      });
+      let dispatcher
+      if (server.nightcore) {
+        downloadNightcore(results.videos[0].url, (error, songPath) => {
+          if (error) {
+            message.channel.send(`There was an error executing this command. Continuing with the next song.`);
+            return nextSong(server, message);
+          }
+          dispatcher = server.connection.play(songPath, { bitrate: 64 })
+          message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
+          dispatcher.on("finish", () => {
+            nextSong(server, message);
+          });
+        })
+      } else {
+        dispatcher = server.connection.play(ytdl(results.videos[0].url, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: 64 })
+        message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
+        dispatcher.on("finish", () => {
+          nextSong(server, message);
+        });
+      }
+
       server.dispatcher = dispatcher
     })
   } else {
     let dispatcher
     if (ytdl.validateURL(songPath)) {
-      dispatcher = server.connection.play(ytdl(songPath, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: 64 })
-      message.channel.send(`Playing ${song.url}. Let's get funky.`);
+      if (server.nightcore) {
+        downloadNightcore(songPath, (error, nightcorePath) => {
+          dispatcher = server.connection.play(nightcorePath, { bitrate: 64 })
+          message.channel.send(`Playing ${songPath} in nightcore mode. Let's get funky.`);
+        })
+      } else {
+        dispatcher = server.connection.play(ytdl(songPath, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: 64 })
+        message.channel.send(`Playing ${song.url}. Let's get funky.`);
+      }
     } else {
       dispatcher = server.connection.play(songPath, { bitrate: 64 })
     }

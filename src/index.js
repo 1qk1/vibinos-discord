@@ -21,6 +21,9 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity(`${state.prefix}help and ${state.prefix}play`, { type: "LISTENING" });
 });
+client.on("guildCreate", () => {
+  client.user.setActivity(`${state.prefix}help and ${state.prefix}play`, { type: "LISTENING" });
+});
 
 client.on("message", message => {
   if (!message.content.startsWith(state.prefix) || message.author.bot) return;
