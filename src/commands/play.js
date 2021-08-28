@@ -48,12 +48,13 @@ module.exports = {
         })
       }
       else {
-        const song = songs.join(' ')
+        let song = songs.join(' ')
         const queueItems = server.queue.length
         if (ytdl.validateURL(song)) {
           server.addSong({ url: song });
         } else {
           const results = await yts(song);
+          song = results.videos[0].url
           server.addSong({ url: results.videos[0].url });
         }
         if (queueItems === 0 && !server.playing) {
