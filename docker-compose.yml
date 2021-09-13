@@ -15,10 +15,10 @@ services:
     volumes:
       - mongo-volume:/data/db
   
-  mongo-express:
-    image: mongo-express
-    ports:
-      - 8081:8081
+  # mongo-express:
+  #   image: mongo-express
+  #   ports:
+  #     - 8081:8081
   
 volumes:
   mongo-volume:
