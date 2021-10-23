@@ -5,13 +5,17 @@ const { state } = require('./servers')
 
 const client = new Client({ disableMentions: "everyone" });
 
-client.commands = new Collection();
-state.client = client
 
-const commandFiles = readdirSync(join(__dirname, '../', 'commands')).filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-  const command = require(join(__dirname, '../', 'commands', `${file}`));
-  client.commands.set(command.name, command);
-}
+client.on("ready", () => {
+  client.commands = new Collection();
+  state.client = client
+
+  const commandFiles = readdirSync(join(__dirname, '../', 'commands')).filter(file => file.endsWith('.js'));
+  for (const file of commandFiles) {
+    const command = require(join(__dirname, '../', 'commands', `${file}`));
+    client.commands.set(command.name, command);
+  }
+
+});
 
 module.exports = client
