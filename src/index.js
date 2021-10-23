@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv-defaults").config();
 
 const client = require('./utils/client');
 const { state } = require('./utils/servers');
