@@ -18,6 +18,9 @@ module.exports = {
     const songs = args;
 
     server.joinChannel(message.member.voice.channel).then(connection => {
+      connection.on('disconnect', () => {
+        songControls.stopSongs(server);
+      })
       if (songs.length === 1 && isSpotifyPlaylist(songs[0])) {
         getPlaylistTracks(getPlaylistID(songs[0])).then(songsResults => {
           const queueItems = server.queue.length
