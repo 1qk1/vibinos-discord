@@ -27,7 +27,7 @@
     "mongoose": "^5.12.14",
     "nanoid": "^3.1.23",
     "spotify-web-api-node": "^5.0.2",
-    "url-parse": "^1.5.1",
+    "url-parse": "^1.5.2",
     "validator": "^13.6.0",
     "yt-search": "^2.9.0",
     "ytdl-core": "^4.9.1",
