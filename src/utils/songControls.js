@@ -1,5 +1,6 @@
 const dytdl = require('discord-ytdl-core');
 const ytdl = require('ytdl-core');
+const myytdl = require('./ytdl');
 const yts = require('yt-search');
 
 const nextSong = (server, message) => {
@@ -33,14 +34,14 @@ const playSong = (server, message, song) => {
       let dispatcher
       if (server.nightcore) {
         const stream = dytdl(results.videos[0].url, {
-          quality: "highestaudio",
+          filter: "audioonly",
           fmt: "mp3",
           encoderArgs: filters.nightcore[server.nightcore - 1]
         })
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(ytdl(results.videos[0].url, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: server.quality || 64 })
+        dispatcher = server.connection.play(myytdl(results.videos[0].url), { bitrate: server.quality || 64, type: "opus" })
         message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
       }
       dispatcher.on("finish", () => {
@@ -53,15 +54,15 @@ const playSong = (server, message, song) => {
     let dispatcher
     if (ytdl.validateURL(songPath)) {
       if (server.nightcore) {
-        const stream = ytdl(results.videos[0].url, {
-          quality: "highestaudio",
+        const stream = dytdl(results.videos[0].url, {
+          filter: "audioonly",
           fmt: "mp3",
           encoderArgs: filters.nightcore[server.nightcore - 1]
         })
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(ytdl(songPath, { quality: 'highestaudio', highWaterMark: 1 << 25 }), { bitrate: server.quality || 64 })
+        dispatcher = server.connection.play(myytdl(songPath), { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${song.url}. Let's get funky.`);
       }
     } else {
