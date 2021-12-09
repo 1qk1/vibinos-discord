@@ -62,7 +62,7 @@ const playSong = (server, message, song) => {
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(myytdl(songPath), { bitrate: server.quality || 64 })
+        dispatcher = server.connection.play(myytdl(songPath), { bitrate: server.quality || 64, type: "opus" })
         message.channel.send(`Playing ${song.url}. Let's get funky.`);
       }
     } else {
