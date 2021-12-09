@@ -5,7 +5,7 @@ module.exports = {
   description: "Join the user's voice channel",
   needsVoiceChannel: true,
   execute(server, message) {
-    if (message.member.voice.channel.id === server.botChannel.id) {
+    if (server.botChannel && message.member.voice.channel.id === server.botChannel.id) {
       songControls.stopSongs(server);
       message.channel.send('Stopping all songs.');
       message.channel.send("Bye bye.");
