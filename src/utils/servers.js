@@ -50,6 +50,11 @@ class Server {
     return channel.join().then(connection => {
       this.connection = connection;
       this.botChannel = channel;
+      const removeListenerFunction = () => {
+        songControls.stopSongs(this);
+        connection.removeListener('disconnect', removeListenerFunction);
+      }
+      connection.on('disconnect', removeListenerFunction)
       return connection
     });
   }
