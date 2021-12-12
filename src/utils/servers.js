@@ -39,9 +39,12 @@ class Server {
       songToAdd = await getYoutubeSong(song)
     }
     this.queue.push(songToAdd)
+    const songNotPlaying = this.queue.length > 0 && this.queue.length >= this.queueIndex && !this.playing
+    if (songNotPlaying) {
+      songControls.nextSong(this, message);
+    }
     if (message) {
-      if (this.queue.length > 0 && this.queue.length >= this.queueIndex && !this.playing) {
-        songControls.nextSong(this, message);
+      if (songNotPlaying) {
         message.channel.send(`Playing **${songToAdd.name}**. Let's get funky.`);
       } else {
         message.channel.send(`Added **\`${songToAdd.name}\`** to the queue.`);
