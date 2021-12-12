@@ -29,12 +29,7 @@ const playSong = (server, song) => {
     yts(song.name).then(results => {
       let dispatcher
       if (server.nightcore) {
-        const stream = dytdl(results.videos[0].url, {
-          filter: "audioonly",
-          fmt: "mp3",
-          encoderArgs: filters.nightcore[server.nightcore - 1],
-          highWaterMark: 1 << 25
-        })
+        const stream = myytdl(results.videos[0].url, server, { encoderArgs: filters.nightcore[server.nightcore - 1], fmt: "mp3", opusEncoded: false })
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         server.channel.send(`Playing \`**${results.videos[0].title}**\` in nightcore mode. Let's get funky.`);
       } else {
@@ -53,12 +48,7 @@ const playSong = (server, song) => {
     let dispatcher
     if (ytdl.validateURL(songPath)) {
       if (server.nightcore) {
-        const stream = dytdl(results.videos[0].url, {
-          filter: "audioonly",
-          fmt: "mp3",
-          highWaterMark: 1 << 25,
-          encoderArgs: filters.nightcore[server.nightcore - 1]
-        })
+        const stream = myytdl(results.videos[0].url, server, { encoderArgs: filters.nightcore[server.nightcore - 1], fmt: "mp3", opusEncoded: false })
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         server.channel.send(`Playing \`**${results.videos[0].title}\`** in nightcore mode. Let's get funky.`);
       } else {
