@@ -50,7 +50,7 @@ client.on("message", message => {
     state.add(message.guild.id);
   }
   const server = state.get(message.guild.id);
-  server.channel = message.member.voice.channel;
+  server.channel = message.channel;
 
   try {
     command.execute(server, message, args);

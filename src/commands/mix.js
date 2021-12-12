@@ -14,7 +14,7 @@ module.exports = {
     const songs = args.join('').split(',');
 
     if (songs.length < 2) {
-      return message.channel.send("You need 2 or more songs to use this command.");
+      return server.channel.send("You need 2 or more songs to use this command.");
     }
 
     server.joinChannel(message.member.voice.channel).then(connection => {
@@ -27,20 +27,20 @@ module.exports = {
         server.addConvert(songsToPlay);
         download(server.convertQueue[0], (error, songPaths) => {
           if (error) {
-            return message.channel.send(error);
+            return server.channel.send(error);
           }
           // compile them together
           compileSongs(songPaths, async (error, songPath) => {
             if (error) {
-              return message.channel.send("There was an error and couldn't play the song.");
+              return server.channel.send("There was an error and couldn't play the song.");
             } else {
               // play the final file
               // const songName = 
               server.convertFinished();
               const playing = server.playing
-              await server.addSong(new Song({ name: `Mix: ${songTitles}`, url: songPath }), message, false);
+              await server.addSong(new Song({ name: `Mix: ${songTitles}`, url: songPath }), false);
               if (playing) {
-                message.channel.send("Song mixed and added to queue.");
+                server.channel.send("Song mixed and added to queue.");
               }
             }
           });

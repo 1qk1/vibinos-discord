@@ -7,39 +7,39 @@ const Song = require('../utils/song')
 
 module.exports = {
   name: 'play',
-  description: `Plays a mix if there are 2 youtube songs (\`${state.prefix}play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg\`), a song or a playlist from youtube/spotify.`,
+  description: `Plays a song from youtube or a playlist from youtube/spotify.`,
   needsVoiceChannel: true,
   args: true,
-  usage: `\`${state.prefix}play childish gambino redbone\` or \n\`${state.prefix}play https://www.youtube.com/watch?v=0J2QdDbelmY, https://www.youtube.com/watch?v=qeMFqkcPYcg\``,
+  usage: `\`${state.prefix}play childish gambino redbone\` or \n\`${state.prefix}play https://www.youtube.com/watch?v=0J2QdDbelmY\``,
   execute(server, message, args) {
     const songs = args;
 
     server.joinChannel(message.member.voice.channel).then(async connection => {
-      if (songs.length === 1 && isSpotifyPlaylist(songs[0])) {
+      if (songs.length === 1 && isSpotifyPlaylist(songs[0])) { // spotify playlist
         getPlaylistTracks(getPlaylistID(songs[0])).then(async songsResults => {
           songsResults.forEach(song => {
             if (song.track) {
-              server.addSong(new Song({ name: `${song.track.artists[0].name} - ${song.track.name}` }), null, false)
+              server.addSong(new Song({ name: `${song.track.artists[0].name} - ${song.track.name}` }), false, false)
             }
           })
         })
-      } else if (songs.length === 1 && ytpl.validateID(songs[0])) {
+      } else if (songs.length === 1 && ytpl.validateID(songs[0])) { //youtube playlist
         const playlistURL = songs[0]
         ytpl(playlistURL, {
           limit: Infinity
         }).then(async res => {
           const playlist = res.items;
           // add them to the queue
-          playlist.forEach(song => server.addSong(new Song({ name: song.title, url: song.shortUrl }), null, false))
-          message.channel.send(`Added ${playlist.length} songs to the queue.`)
+          playlist.forEach(song => server.addSong(new Song({ name: song.title, url: song.shortUrl })))
+          server.channel.send(`Added ${playlist.length} songs to the queue.`)
         })
       }
-      else {
+      else { //search youtube song by title
         const song = songs.join(' ')
         const queueItems = server.queue.length
-        await server.addSong(song, message);
+        await server.addSong(song);
         if (queueItems === 0 && !server.playing) {
-          songControls.nextSong(server, message);
+          songControls.nextSong(server);
         }
       }
     })

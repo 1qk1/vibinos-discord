@@ -33,7 +33,7 @@ class Server {
     this.savePlaylist.bind(this)
     this.playPlaylist.bind(this)
   }
-  async addSong(song, message, searchYoutube = true) {
+  async addSong(song, sendMessage = true, searchYoutube = true) {
     let songToAdd = song
     if (searchYoutube) {
       songToAdd = await getYoutubeSong(song)
@@ -41,13 +41,13 @@ class Server {
     this.queue.push(songToAdd)
     const songNotPlaying = this.queue.length > 0 && this.queue.length >= this.queueIndex && !this.playing
     if (songNotPlaying) {
-      songControls.nextSong(this, message);
+      songControls.nextSong(this);
     }
-    if (message) {
+    if (sendMessage) {
       if (songNotPlaying) {
-        message.channel.send(`Playing **${songToAdd.name}**. Let's get funky.`);
+        this.channel.send(`Playing **${songToAdd.name}**. Let's get funky.`);
       } else {
-        message.channel.send(`Added **\`${songToAdd.name}\`** to the queue.`);
+        this.channel.send(`Added **\`${songToAdd.name}\`** to the queue.`);
       }
     }
     return this.queue;
@@ -97,25 +97,25 @@ class Server {
     }
     return;
   }
-  shuffleQueue(message) {
+  shuffleQueue() {
     const shuffled = [this.queue[0], ...fyShuffle(this.queue.slice(1))]
     this.queue = shuffled
-    message.channel.send(`The queue has been shuffled.`)
+    this.channel.send(`The queue has been shuffled.`)
   }
-  setNightcore(nightcoreLevel, message) {
+  setNightcore(nightcoreLevel) {
     this.nightcore = nightcoreLevel
     if (nightcoreLevel === false) {
-      return message.channel.send(`Nightcore mode is now off`)
+      return this.channel.send(`Nightcore mode is now off`)
     } else {
-      return message.channel.send(`Nightcore mode is now on level ${nightcoreLevel}`)
+      return this.channel.send(`Nightcore mode is now on level ${nightcoreLevel}`)
     }
   }
-  savePlaylist = async (playlistName, message) => {
+  savePlaylist = async (playlistName) => {
     if (!this.queue.length > 0) {
-      return message.channel.send('There is nothing to save.')
+      return this.channel.send('There is nothing to save.')
     }
     if (!playlistName) {
-      return message.channel.send('Provide a name for the playlist.')
+      return this.channel.send('Provide a name for the playlist.')
     }
     let guild
 
@@ -138,9 +138,9 @@ class Server {
         guild_instance: guild
       })
     } catch (error) {
-      return message.channel.send(`There was an error saving this playlist. You might already have a playlist saved with that name.`)
+      return this.channel.send(`There was an error saving this playlist. You might already have a playlist saved with that name.`)
     }
-    message.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.queue.length} tracks.`)
+    this.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.queue.length} tracks.`)
   }
   playPlaylist = async (playlistName, message) => {
     const guild = await Guild.findOne({
@@ -155,16 +155,16 @@ class Server {
     if (playlist) {
       const queueItems = this.queue.length
       this.queue = [...this.queue, ...playlist.tracks]
-      message.channel.send(`Added \`${playlist.tracks.length}\`tracks from playlist \`${playlist.name}\` to the queue`)
+      this.channel.send(`Added \`${playlist.tracks.length}\`tracks from playlist \`${playlist.name}\` to the queue`)
       await this.joinChannel(message.member.voice.channel)
       if (queueItems === 0) {
-        songControls.nextSong(this, message);
+        songControls.nextSong(this);
       }
     } else {
-      return message.channel.send(`Playlist not found`)
+      return this.channel.send(`Playlist not found`)
     }
   }
-  changeQuality = async (quality, message) => {
+  changeQuality = async (quality) => {
     let guild = await Guild.findOne({
       guild_id: this.id
     })
@@ -179,22 +179,22 @@ class Server {
       guild_id: this.id
     }, { quality })
     this.quality = quality
-    return message.channel.send(`Quality changed to ${guild.quality}kbps.`);
+    return this.channel.send(`Quality changed to ${guild.quality}kbps.`);
   }
-  showPlaylists = async (message) => {
+  showPlaylists = async () => {
     const guild = await Guild.findOne({
       guild_id: this.id
     })
     const playlists = await Playlist.find({ guild_instance: guild });
-    message.channel.send(`Here are the currently saved playlists: `)
+    this.channel.send(`Here are the currently saved playlists: `)
     playlists.forEach(pl => {
-      message.channel.send(`\`${pl.name}\` with ${pl.tracks.length} tracks.`)
+      this.channel.send(`\`${pl.name}\` with ${pl.tracks.length} tracks.`)
     })
   }
 
-  showQueue = (page = Math.floor((this.queueIndex) / 10) + 1, message) => {
+  showQueue = (page = Math.floor((this.queueIndex) / 10) + 1) => {
     const itemsPerPage = 10
-    message.channel.send(
+    this.channel.send(
       `
 Showing page **\`${page}\`** of **\`${Math.ceil(this.queue.length / itemsPerPage)}\`**
 

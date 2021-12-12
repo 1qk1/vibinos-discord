@@ -13,6 +13,6 @@ module.exports = {
     if (level !== NaN && level >= 1 && level <= 3) {
       return server.setNightcore(nightcoreLevel, message);
     }
-    return message.channel.send("Nightcore level can be 1 - 3 or leave it blank to turn it off");
+    return server.channel.send("Nightcore level can be 1 - 3 or leave it blank to turn it off");
   }
 };

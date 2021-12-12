@@ -17,7 +17,7 @@ module.exports = {
     if (qualityMap[quality]) {
       return server.changeQuality(qualityMap[quality], message)
     } else {
-      return message.channel.send(`Quality is set to ${qualityMap[server.quality]}(${server.quality}kbps).`);
+      return server.channel.send(`Quality is set to ${qualityMap[server.quality]}(${server.quality}kbps).`);
     }
   }
 };

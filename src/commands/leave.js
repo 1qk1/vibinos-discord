@@ -7,11 +7,11 @@ module.exports = {
   execute(server, message) {
     if (server.botChannel && message.member.voice.channel.id === server.botChannel.id) {
       songControls.stopSongs(server);
-      message.channel.send('Stopping all songs.');
-      message.channel.send("Bye bye.");
+      server.channel.send('Stopping all songs.');
+      server.channel.send("Bye bye.");
       server.leaveChannel(message.member.voice.channel);
     } else {
-      return message.channel.send("I'm not in your channel.");
+      return server.channel.send("I'm not in your channel.");
     }
   }
 };
