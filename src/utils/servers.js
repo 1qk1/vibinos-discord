@@ -1,41 +1,50 @@
 const Playlist = require('../models/playlist')
 const Guild = require('../models/guild')
 const songControls = require('../utils/songControls')
+const getYoutubeSong = require('./getYT')
+const fyShuffle = require('./fisherYatesShuffle')
 
 class Server {
   constructor({
     id,
     convertQueue = [],
     queue = [],
-    fullPlaylist = [],
+    queueIndex = -1,
     dispatcher = null,
     connection = null,
     channel = null,
     botChannel = null,
     timeOut = null,
-    shuffle = false,
     nightcore = false,
     quality = 64
   } = {}) {
     this.id = id
     this.convertQueue = convertQueue
     this.queue = queue
-    this.fullPlaylist = fullPlaylist
+    this.queueIndex = queueIndex
     this.dispatcher = dispatcher
     this.connection = connection
     this.channel = channel
     this.botChannel = botChannel
     this.timeOut = timeOut
-    this.shuffle = shuffle
     this.nightcore = nightcore
     this.playing = false
     this.quality = quality
     this.savePlaylist.bind(this)
     this.playPlaylist.bind(this)
   }
-  addSong(song) {
-    this.queue.push(song)
-    this.fullPlaylist.push(song)
+  async addSong(song, message, searchYoutube = true) {
+    let songToAdd = song
+    if (searchYoutube) {
+      songToAdd = await getYoutubeSong(song)
+    }
+    this.queue.push(songToAdd)
+    if (message && this.queue.length > 0 && this.queue.length >= this.queueIndex && !this.playing) {
+      songControls.nextSong(this, message);
+      message.channel.send(`Playing **${songToAdd.name}**. Let's get funky.`);
+    } else {
+      message.channel.send(`Added **\`${songToAdd.name}\`** to the queue.`);
+    }
     return this.queue;
   }
   addConvert(songArray) {
@@ -83,14 +92,10 @@ class Server {
     }
     return;
   }
-  toggleShuffle(message) {
-    const newShuffle = !this.shuffle
-    this.shuffle = newShuffle
-    const STATEMAP = {
-      true: "on",
-      false: "off"
-    }
-    message.channel.send(`Shuffle is now ${STATEMAP[newShuffle]}`)
+  shuffleQueue(message) {
+    const shuffled = [this.queue[0], ...fyShuffle(this.queue.slice(1))]
+    this.queue = shuffled
+    message.channel.send(`The queue has been shuffled.`)
   }
   setNightcore(nightcoreLevel, message) {
     this.nightcore = nightcoreLevel
@@ -101,7 +106,7 @@ class Server {
     }
   }
   savePlaylist = async (playlistName, message) => {
-    if (!this.fullPlaylist.length > 0) {
+    if (!this.queue.length > 0) {
       return message.channel.send('There is nothing to save.')
     }
     if (!playlistName) {
@@ -124,14 +129,13 @@ class Server {
     try {
       playlist = await Playlist.create({
         name: playlistName,
-        tracks: this.fullPlaylist,
+        tracks: this.queue,
         guild_instance: guild
       })
     } catch (error) {
-      console.log(error)
       return message.channel.send(`There was an error saving this playlist. You might already have a playlist saved with that name.`)
     }
-    message.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.fullPlaylist.length} tracks.`)
+    message.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.queue.length} tracks.`)
   }
   playPlaylist = async (playlistName, message) => {
     const guild = await Guild.findOne({
@@ -146,7 +150,6 @@ class Server {
     if (playlist) {
       const queueItems = this.queue.length
       this.queue = [...this.queue, ...playlist.tracks]
-      this.fullPlaylist = [...this.fullPlaylist, ...playlist.tracks]
       message.channel.send(`Added \`${playlist.tracks.length}\`tracks from playlist \`${playlist.name}\` to the queue`)
       await this.joinChannel(message.member.voice.channel)
       if (queueItems === 0) {
@@ -182,6 +185,19 @@ class Server {
     playlists.forEach(pl => {
       message.channel.send(`\`${pl.name}\` with ${pl.tracks.length} tracks.`)
     })
+  }
+
+  showQueue = (page = Math.floor((this.queueIndex) / 10) + 1, message) => {
+    const itemsPerPage = 10
+    message.channel.send(
+      `
+Showing page **\`${page}\`** of **\`${Math.ceil(this.queue.length / itemsPerPage)}\`**
+
+${this.queue.slice((page * itemsPerPage) - itemsPerPage, page * itemsPerPage).map((song, index) => {
+        const isCurrent = index + ((page - 1) * 10) === (this.queueIndex)
+        return `\`[${index + 1 + ((page * itemsPerPage) - itemsPerPage)}]\`${isCurrent ? " **▶️" : ""} ${song.name || song.url}${isCurrent ? " **" : ""}`
+      }).join('\n')}
+`)
   }
 }
 

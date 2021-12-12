@@ -4,13 +4,9 @@ const myytdl = require('./ytdl');
 const yts = require('yt-search');
 
 const nextSong = (server, message) => {
-  if (server.queue.length > 0) {
-    let songIndex = 0
-    if (server.shuffle) {
-      songIndex = Math.floor(Math.random() * server.queue.length)
-    }
-    const song = server.queue[songIndex]
-    server.queue.splice(songIndex, 1)
+  server.queueIndex++
+  if (server.queue.length > server.queueIndex) {
+    const song = server.queue[server.queueIndex]
     playSong(server, message, song)
   } else {
     stopSongs(server)
@@ -29,7 +25,7 @@ const playSong = (server, message, song) => {
       ['-af', 'asetrate=48000*1.45,aresample=48000,atempo=1/1.2']
     ]
   }
-  if (song.name) {
+  if (song.name && !song.url) {
     yts(song.name).then(results => {
       let dispatcher
       if (server.nightcore) {
@@ -41,7 +37,8 @@ const playSong = (server, message, song) => {
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(myytdl(results.videos[0].url), { bitrate: server.quality || 64, type: "opus" })
+        // console.log(results.videos[0])
+        dispatcher = server.connection.play(myytdl(results.videos[0].url, server, message), { bitrate: server.quality || 64, type: "opus" })
         message.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
       }
       dispatcher.on("finish", () => {
@@ -62,8 +59,7 @@ const playSong = (server, message, song) => {
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
         message.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(myytdl(songPath), { bitrate: server.quality || 64, type: "opus" })
-        message.channel.send(`Playing ${song.url}. Let's get funky.`);
+        dispatcher = server.connection.play(myytdl(songPath, server, message), { bitrate: server.quality || 64, type: "opus" })
       }
     } else {
       dispatcher = server.connection.play(songPath, { bitrate: server.quality || 64 })
@@ -81,10 +77,10 @@ const stopSongs = (server) => {
   // clear convertQueue queue
   if (server.dispatcher) {
     server.queue = [];
-    server.fullPlaylist = [];
     server.dispatcher.end();
     server.convertQueue = [];
     server.playing = false;
+    server.queueIndex = -1
   }
 }
 
