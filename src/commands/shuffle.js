@@ -1,7 +1,7 @@
 module.exports = {
   name: 'shuffle',
-  description: 'Turns shuffle on or off',
+  description: 'Shuffles the current queue.',
   execute(server, message) {
-    server.toggleShuffle(message);
+    server.shuffleQueue(message);
   }
 };
