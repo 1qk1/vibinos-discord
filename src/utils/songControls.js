@@ -46,6 +46,7 @@ const playSong = (server, song) => {
       });
 
       server.dispatcher = dispatcher
+      server.dispatcher.on('error', console.error);
     })
   } else {
     let dispatcher
@@ -69,6 +70,7 @@ const playSong = (server, song) => {
     });
 
     server.dispatcher = dispatcher
+    server.dispatcher.on('error', console.error);
   }
 }
 

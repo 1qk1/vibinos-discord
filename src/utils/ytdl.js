@@ -6,8 +6,8 @@ module.exports = (input, server) => {
     filter: "audioonly",
     opusEncoded: true,
   }).on('error', (error) => {
-    server.channel.send(`There was an error while playing this song, continuing to the next one.`);
-    songControls.nextSong(server);
+    server.channel.send(`There was an error while playing this song.`);
+    // songControls.nextSong(server);
     console.log(error)
   })
 }
