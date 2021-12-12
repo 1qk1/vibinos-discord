@@ -32,14 +32,15 @@ const playSong = (server, song) => {
         const stream = dytdl(results.videos[0].url, {
           filter: "audioonly",
           fmt: "mp3",
-          encoderArgs: filters.nightcore[server.nightcore - 1]
+          encoderArgs: filters.nightcore[server.nightcore - 1],
+          highWaterMark: 1 << 25
         })
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
-        server.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
+        server.channel.send(`Playing \`**${results.videos[0].title}\`** in nightcore mode. Let's get funky.`);
       } else {
         // console.log(results.videos[0])
         dispatcher = server.connection.play(myytdl(results.videos[0].url, server), { bitrate: server.quality || 64, type: "opus" })
-        server.channel.send(`Playing ${results.videos[0].url}. Let's get funky.`);
+        server.channel.send(`Playing \`**${results.videos[0].title}\`**. Let's get funky.`);
       }
       dispatcher.on("finish", () => {
         nextSong(server);
@@ -55,10 +56,11 @@ const playSong = (server, song) => {
         const stream = dytdl(results.videos[0].url, {
           filter: "audioonly",
           fmt: "mp3",
+          highWaterMark: 1 << 25,
           encoderArgs: filters.nightcore[server.nightcore - 1]
         })
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
-        server.channel.send(`Playing ${results.videos[0].url} in nightcore mode. Let's get funky.`);
+        server.channel.send(`Playing \`**${results.videos[0].title}\`** in nightcore mode. Let's get funky.`);
       } else {
         dispatcher = server.connection.play(myytdl(songPath, server), { bitrate: server.quality || 64, type: "opus" })
       }

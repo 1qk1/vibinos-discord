@@ -13,7 +13,7 @@ const download = (songs, cb) => {
       songPaths.push(songPath);
       return cb2(null);
     }
-    const video = ytdl(song, { filter: "audioonly" });
+    const video = ytdl(song, { filter: "audioonly", highWaterMark: 1 << 25 });
 
     video.pipe(fs.createWriteStream(songPath));
     video.on('end', function (info) {
