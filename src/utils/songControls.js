@@ -16,7 +16,6 @@ const nextSong = (server) => {
 
 const playSong = (server, song) => {
   server.stopTimer();
-  const songPath = song.url
   server.playing = true
   const filters = {
     nightcore: [
@@ -46,16 +45,16 @@ const playSong = (server, song) => {
     })
   } else {
     let dispatcher
-    if (ytdl.validateURL(songPath)) {
+    if (ytdl.validateURL(song.url)) {
       if (server.nightcore) {
-        const stream = myytdl(results.videos[0].url, server, { encoderArgs: filters.nightcore[server.nightcore - 1], fmt: "mp3", opusEncoded: false })
+        const stream = myytdl(song.url, server, { encoderArgs: filters.nightcore[server.nightcore - 1], fmt: "mp3", opusEncoded: false })
         dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
-        server.channel.send(`Playing **\`${results.videos[0].title}\`** in nightcore mode. Let's get funky.`);
+        server.channel.send(`Playing **\`${song.name}\`** in nightcore mode. Let's get funky.`);
       } else {
-        dispatcher = server.connection.play(myytdl(songPath, server), { bitrate: server.quality || 64, type: "opus" })
+        dispatcher = server.connection.play(myytdl(song.url, server), { bitrate: server.quality || 64, type: "opus" })
       }
     } else {
-      dispatcher = server.connection.play(songPath, { bitrate: server.quality || 64 })
+      dispatcher = server.connection.play(song.url, { bitrate: server.quality || 64 })
     }
     dispatcher.on("finish", () => {
       nextSong(server);
