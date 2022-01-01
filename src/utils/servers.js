@@ -65,10 +65,10 @@ class Server {
   setNextSong() {
     switch (this.repeat) {
       case repeatStates.REPEAT_ALL:
-        if (this.queue.length > this.queueIndex) {
-          return this.queueIndex++;
+        if (this.queueIndex + 1 >= this.queue.length) {
+          return this.queueIndex = 0;
         }
-        return this.queueIndex = 0;
+        return this.queueIndex++;
       case repeatStates.REPEAT_OFF:
         return this.queueIndex++;
     }
