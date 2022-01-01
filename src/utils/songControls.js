@@ -4,7 +4,7 @@ const myytdl = require('./ytdl');
 const yts = require('yt-search');
 
 const nextSong = (server) => {
-  server.queueIndex++
+  server.setNextSong()
   if (server.queue.length > server.queueIndex) {
     const song = server.queue[server.queueIndex]
     playSong(server, song)

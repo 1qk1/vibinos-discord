@@ -3,7 +3,7 @@ const Guild = require('../models/guild')
 const songControls = require('../utils/songControls')
 const getYoutubeSong = require('./getYT')
 const fyShuffle = require('./fisherYatesShuffle')
-
+const { repeat: repeatStates } = require('./variables')
 class Server {
   constructor({
     id,
@@ -16,6 +16,7 @@ class Server {
     botChannel = null,
     timeOut = null,
     nightcore = false,
+    repeat = repeatStates.REPEAT_OFF,
     quality = 64
   } = {}) {
     this.id = id
@@ -28,6 +29,7 @@ class Server {
     this.botChannel = botChannel
     this.timeOut = timeOut
     this.nightcore = nightcore
+    this.repeat = repeat
     this.playing = false
     this.quality = quality
     this.savePlaylist.bind(this)
@@ -55,6 +57,21 @@ class Server {
   addConvert(songArray) {
     this.convertQueue.push(songArray)
     return this.convertQueue
+  }
+  setRepeat(repeat) {
+    this.repeat = repeat
+    return this.repeat
+  }
+  setNextSong() {
+    switch (this.repeat) {
+      case repeatStates.REPEAT_ALL:
+        if (server.queue.length > server.queueIndex) {
+          return server.queueIndex++;
+        }
+        return server.queueIndex = 0;
+      case repeatStates.REPEAT_OFF:
+        return server.queueIndex++;
+    }
   }
   convertFinished() {
     this.convertQueue = this.convertQueue.slice(1)
