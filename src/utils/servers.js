@@ -84,6 +84,7 @@ class Server {
       const removeListenerFunction = () => {
         songControls.stopSongs(this);
         connection.removeListener('disconnect', removeListenerFunction);
+        this.leaveChannel();
       }
       connection.on('disconnect', removeListenerFunction)
       return connection
@@ -91,6 +92,7 @@ class Server {
   }
   leaveChannel() {
     this.botChannel.leave();
+    this.connection.disconnect();
     this.connection = null;
     this.botChannel = null;
     return;
