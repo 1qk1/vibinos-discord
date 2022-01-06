@@ -91,7 +91,6 @@ class Server {
     });
   }
   leaveChannel() {
-    this.botChannel.leave();
     this.connection.disconnect();
     this.connection = null;
     this.botChannel = null;
