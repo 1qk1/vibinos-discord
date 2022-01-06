@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const Guild = require('./guild')
 
+const memberSchema = new mongoose.Schema({
+  member_id: {
+    type: mongoose.SchemaTypes.String,
+    unique: true
+  },
+  name: mongoose.SchemaTypes.String,
+});
+
 const playlistSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -27,7 +35,8 @@ const playlistSchema = new mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: "guild",
     required: true
-  }
+  },
+  addedBy: memberSchema
 });
 playlistSchema.index({ name: 1 });
 

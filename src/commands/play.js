@@ -4,6 +4,7 @@ const { isSpotifyPlaylist, getPlaylistID } = require('../utils/isSpotifyPlaylist
 const { getPlaylistTracks } = require('../utils/spotifyApi')
 const { state } = require('../utils/servers')
 const Song = require('../utils/song')
+const Member = require('../utils/member')
 
 module.exports = {
   name: 'play',
@@ -15,11 +16,12 @@ module.exports = {
     const songs = args;
 
     server.joinChannel(message.member.voice.channel).then(async connection => {
+      const member = new Member({ name: message.member.displayName, member_id: message.member.id })
       if (songs.length === 1 && isSpotifyPlaylist(songs[0])) { // spotify playlist
         getPlaylistTracks(getPlaylistID(songs[0])).then(async songsResults => {
           songsResults.forEach(song => {
             if (song.track) {
-              server.addSong(new Song({ name: `${song.track.artists[0].name} - ${song.track.name}` }), false, false)
+              server.addSong(new Song({ name: `${song.track.artists[0].name} - ${song.track.name}`, addedBy: member }), false, false)
             }
           })
         })
@@ -30,7 +32,7 @@ module.exports = {
         }).then(async res => {
           const playlist = res.items;
           // add them to the queue
-          playlist.forEach(song => server.addSong(new Song({ name: song.title, url: song.shortUrl }), false))
+          playlist.forEach(song => server.addSong(new Song({ name: song.title, url: song.shortUrl, addedBy: member }), false))
           server.channel.send(`Added ${playlist.length} songs to the queue.`)
         })
       }
