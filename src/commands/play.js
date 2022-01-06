@@ -30,7 +30,7 @@ module.exports = {
         }).then(async res => {
           const playlist = res.items;
           // add them to the queue
-          playlist.forEach(song => server.addSong(new Song({ name: song.title, url: song.shortUrl })))
+          playlist.forEach(song => server.addSong(new Song({ name: song.title, url: song.shortUrl }), false))
           server.channel.send(`Added ${playlist.length} songs to the queue.`)
         })
       }
