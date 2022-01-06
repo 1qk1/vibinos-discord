@@ -18,7 +18,7 @@ module.exports = {
     }
     if (repeatStatesArray.REPEAT_SINGLE_ARRAY.includes(repeat)) {
       server.setRepeat(repeatStates.REPEAT_SINGLE, message);
-      return server.channel.send("Repeat mode is set to `single song`");
+      return server.channel.send("Repeat mode is set to `single` song");
     }
     if (repeatStatesArray.REPEAT_OFF_ARRAY.includes(repeat)) {
       server.setRepeat(repeatStates.REPEAT_OFF, message);
