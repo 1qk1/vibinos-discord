@@ -98,7 +98,9 @@ class Server {
     });
   }
   leaveChannel() {
-    this.connection.disconnect();
+    if (this.connection) {
+      this.connection.disconnect();
+    }
     return;
   }
 
