@@ -19,6 +19,8 @@
   "homepage": "https://github.com/1qk1/vibinos-discord#readme",
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
+    "@sentry/node": "^6.16.1",
+    "@sentry/tracing": "^6.16.1",
     "async": "^3.2.3",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^12.5.3",
