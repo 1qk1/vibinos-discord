@@ -77,32 +77,29 @@ class Server {
     this.convertQueue = this.convertQueue.slice(1)
     return this.convertQueue
   }
-  addDisconnectEvent() {
-    const removeListenerFunction = () => {
-      connection.removeListener('disconnect', removeListenerFunction);
-      songControls.stopSongs(this);
-      this.dispatcher.destroy();
-      this.dispatcher = null
-      this.connection = null;
-      this.botChannel = null;
-    }
-    this.connection.on('disconnect', removeListenerFunction)
-  }
   joinChannel(channel) {
-    if (this.botChannel.id !== channel.id) {
-      this.leaveChannel();
-    }
     return channel.join().then(connection => {
       this.connection = connection;
       this.botChannel = channel;
-      this.addDisconnectEvent();
+      const removeListenerFunction = () => {
+        connection.removeListener('disconnect', removeListenerFunction);
+        this.commonLeave();
+      }
+      connection.on('disconnect', removeListenerFunction)
       return connection
     });
   }
-  leaveChannel() {
-    if (this.connection) {
-      this.connection.disconnect();
+  commonLeave() {
+    if (this.dispatcher) {
+      this.dispatcher.destroy();
     }
+    this.dispatcher = null;
+    this.connection = null;
+    this.botChannel = null;
+    songControls.stopSongs(this);
+  }
+  leaveChannel() {
+    this.connection.disconnect();
     return;
   }
 
