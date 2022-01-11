@@ -93,7 +93,7 @@ class Server {
     return channel.join().then(connection => {
       this.connection = connection;
       this.botChannel = channel;
-      addDisconnectEvent();
+      this.addDisconnectEvent();
       return connection
     });
   }
