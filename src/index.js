@@ -8,7 +8,7 @@ const Sentry = require("@sentry/node");
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
 
-if (process.env.SENTRY_DSN) {
+if (process.env.SENTRY_DSN && process.env.NODE_ENV.toLowerCase() === 'production') {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
