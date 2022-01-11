@@ -4,9 +4,16 @@ const client = require('./utils/client');
 const { state } = require('./utils/servers');
 const validator = require('validator');
 const mongoose = require('mongoose');
-
+const Sentry = require("@sentry/node");
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+  });
+}
 
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -56,6 +63,7 @@ client.on("message", message => {
     command.execute(server, message, args);
   } catch (error) {
     console.error(error);
+    Sentry.captureException(error);
     message.reply('there was an error trying to execute that command!');
   }
 });
