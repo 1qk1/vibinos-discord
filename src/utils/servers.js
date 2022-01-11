@@ -89,7 +89,9 @@ class Server {
     this.connection.on('disconnect', removeListenerFunction)
   }
   joinChannel(channel) {
-    this.leaveChannel();
+    if (this.botChannel.id !== channel.id) {
+      this.leaveChannel();
+    }
     return channel.join().then(connection => {
       this.connection = connection;
       this.botChannel = channel;
