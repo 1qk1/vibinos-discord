@@ -39,7 +39,7 @@ module.exports = {
       else { //search youtube song by title
         const song = songs.join(' ')
         const queueItems = server.queue.length
-        await server.addSong(new Song({ name: song, addedBy: member }), false);
+        await server.addSong(new Song({ name: song, addedBy: member }));
         if (queueItems === 0 && !server.playing) {
           songControls.nextSong(server);
         }
