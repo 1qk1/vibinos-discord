@@ -224,7 +224,7 @@ Showing page **\`${page}\`** of **\`${Math.ceil(this.queue.length / itemsPerPage
 
 ${this.queue.slice((page * itemsPerPage) - itemsPerPage, page * itemsPerPage).map((song, index) => {
         const isCurrent = index + ((page - 1) * 10) === (this.queueIndex)
-        return `\`[${index + 1 + ((page * itemsPerPage) - itemsPerPage)}]\`${isCurrent ? " **▶️" : ""} ${song.name || song.url}${isCurrent ? " **" : ""} added by **${song.addedBy.name}**`
+        return `\`[${index + 1 + ((page * itemsPerPage) - itemsPerPage)}]\`${isCurrent ? " **▶️" : ""} ${song.name || song.url}${isCurrent ? " **" : ""} ${song.addedBy && `added by **${song.addedBy.name}**`}`
       }).join('\n')}
 `)
   }
