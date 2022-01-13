@@ -14,7 +14,6 @@ module.exports = (song) => {
       name: ytSong.title,
       addedBy: song.addedBy
     }
-    console.log(ytSong)
     return new Song(songData)
   })
 
