@@ -77,7 +77,10 @@ class Server {
     this.convertQueue = this.convertQueue.slice(1)
     return this.convertQueue
   }
-  joinChannel(channel) {
+  async joinChannel(channel) {
+    if (this.botChannel && channel.id === this.botChannel.id) {
+      return this.connection
+    }
     return channel.join().then(connection => {
       this.connection = connection;
       this.botChannel = channel;

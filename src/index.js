@@ -32,7 +32,7 @@ client.on("guildCreate", () => {
   client.user.setActivity(`${state.prefix}help and ${state.prefix}play`, { type: "LISTENING" });
 });
 
-client.on("message", message => {
+client.on("message", async message => {
   if (!message.content.startsWith(state.prefix) || message.author.bot) return;
 
   const args = validator.blacklist(message.content.slice(state.prefix.length), blacklistedChars).split(/ +/);
@@ -58,8 +58,10 @@ client.on("message", message => {
   }
   const server = state.get(message.guild.id);
   server.channel = message.channel;
-
   try {
+    if (command.autoJoin) {
+      await server.joinChannel(message.member.voice.channel)
+    }
     command.execute(server, message, args);
   } catch (error) {
     console.error(error);
