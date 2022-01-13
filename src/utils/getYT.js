@@ -8,12 +8,13 @@ module.exports = (song) => {
     searchSong = { videoId: ytdl.getVideoID(song.url) }
   }
   return yts(searchSong).then(res => {
-    const song = !res.videos ? res : res.videos[0]
+    const ytSong = !res.videos ? res : res.videos[0]
     const songData = {
-      url: song.url,
-      name: song.title,
+      url: ytSong.url,
+      name: ytSong.title,
       addedBy: song.addedBy
     }
+    console.log(ytSong)
     return new Song(songData)
   })
 
