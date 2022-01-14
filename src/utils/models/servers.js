@@ -33,6 +33,7 @@ class Server {
     this.playing = false
     this.quality = quality
     this.savePlaylist.bind(this)
+    this.deletePlaylist.bind(this)
     this.playPlaylist.bind(this)
   }
   async addSong(song, sendMessage = true, searchYoutube = true) {
@@ -168,6 +169,22 @@ class Server {
       return this.channel.send(`There was an error saving this playlist. You might already have a playlist saved with that name.`)
     }
     this.channel.send(`Saved playlist with name \`${playlist.name}\` and ${this.queue.length} tracks.`)
+  }
+  deletePlaylist = async (playlistName) => {
+    if (!playlistName) {
+      return this.channel.send('Provide a name for the playlist.')
+    }
+
+    let playlist
+
+    try {
+      playlist = await Playlist.findOneAndDelete({
+        name: playlistName,
+      })
+    } catch (error) {
+      return this.channel.send(`There was an error deleting this playlist. You might already have a playlist saved with that name.`)
+    }
+    this.channel.send(`Deleted playlist with name \`${playlist.name}\` and ${playlist.tracks.length} tracks.`)
   }
   playPlaylist = async (playlistName, message) => {
     const guild = await Guild.findOne({
