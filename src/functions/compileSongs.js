@@ -3,7 +3,7 @@ const { exec } = require("child_process");
 const { nanoid } = require('nanoid');
 const ytdl = require("ytdl-core");
 const fs = require('fs');
-const { getYoutubeURL } = require('../utils/youtube')
+const { getYoutubeURL } = require('../utils/youtube/youtube')
 
 const compileSongs = (songPaths, cb) => {
   const songID = songPaths.map(song => getYoutubeURL(song)).join('')

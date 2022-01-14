@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { state } = require('../utils/servers')
+const { state } = require('../utils/models/servers')
 const client = require('../utils/client')
 
 module.exports = {

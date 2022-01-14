@@ -1,6 +1,6 @@
 const dytdl = require('discord-ytdl-core');
 const ytdl = require('ytdl-core');
-const myytdl = require('./ytdl');
+const myytdl = require('./youtube/ytdl');
 const yts = require('yt-search');
 
 const nextSong = (server) => {

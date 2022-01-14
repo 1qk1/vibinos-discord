@@ -1,5 +1,5 @@
 const dytdl = require('discord-ytdl-core');
-const songControls = require('./songControls')
+const songControls = require('../songControls')
 const Sentry = require("@sentry/node");
 
 module.exports = (input, server, extraParams) => {

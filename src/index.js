@@ -1,7 +1,7 @@
 require("dotenv-defaults").config();
 
 const client = require('./utils/client');
-const { state } = require('./utils/servers');
+const { state } = require('./utils/models/servers');
 const validator = require('validator');
 const mongoose = require('mongoose');
 const Sentry = require("@sentry/node");

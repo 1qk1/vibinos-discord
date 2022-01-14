@@ -1,5 +1,5 @@
 const yts = require('yt-search');
-const Song = require('./song')
+const Song = require('../models/song')
 const ytdl = require('ytdl-core');
 
 module.exports = (song) => {

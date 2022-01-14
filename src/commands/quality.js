@@ -1,4 +1,4 @@
-const { state } = require('../utils/servers')
+const { state } = require('../utils/models/servers')
 
 module.exports = {
   name: 'quality',

@@ -1,8 +1,8 @@
 const download = require('../functions/download')
 const compileSongs = require('../functions/compileSongs')
-const { state } = require('../utils/servers')
+const { state } = require('../utils/models/servers')
 const yts = require('yt-search');
-const Song = require('../utils/song')
+const Song = require('../utils/models/song')
 
 module.exports = {
   name: 'mix',

@@ -1,9 +1,9 @@
-const Playlist = require('../models/playlist')
-const Guild = require('../models/guild')
-const songControls = require('../utils/songControls')
-const getYoutubeSong = require('./getYT')
-const fyShuffle = require('./fisherYatesShuffle')
-const { repeat: repeatStates } = require('./variables')
+const Playlist = require('../../models/playlist')
+const Guild = require('../../models/guild')
+const songControls = require('../songControls')
+const getYoutubeSong = require('../youtube/getYT')
+const fyShuffle = require('../fisherYatesShuffle')
+const { repeat: repeatStates } = require('../variables')
 class Server {
   constructor({
     id,

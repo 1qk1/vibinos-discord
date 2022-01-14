@@ -1,10 +1,10 @@
 const songControls = require('../utils/songControls')
 const ytpl = require('ytpl');
-const { isSpotifyPlaylist, getPlaylistID } = require('../utils/isSpotifyPlaylist')
-const { getPlaylistTracks } = require('../utils/spotifyApi')
-const { state } = require('../utils/servers')
-const Song = require('../utils/song')
-const Member = require('../utils/member')
+const { isSpotifyPlaylist, getPlaylistID } = require('../utils/spotify/isSpotifyPlaylist')
+const { getPlaylistTracks } = require('../utils/spotify/spotifyApi')
+const { state } = require('../utils/models/servers')
+const Song = require('../utils/models/song')
+const Member = require('../utils/models/member')
 
 module.exports = {
   name: 'play',
