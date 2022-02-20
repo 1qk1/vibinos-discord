@@ -5,6 +5,7 @@ const { getPlaylistTracks } = require('../utils/spotify/spotifyApi')
 const { state } = require('../utils/models/servers')
 const Song = require('../utils/models/song')
 const Member = require('../utils/models/member')
+const ytdl = require('ytdl-core');
 
 module.exports = {
   name: 'play',
@@ -37,8 +38,12 @@ module.exports = {
     }
     else { //search youtube song by title
       const song = songs.join(' ')
+      let songParams = { name: song }
+      if (songs.length === 1 && ytdl.validateURL(songs[0])) { // if its single youtube song url
+        songParams = { url: song }
+      }
       const queueItems = server.queue.length
-      await server.addSong(new Song({ name: song, addedBy: member }));
+      await server.addSong(new Song({ ...songParams, addedBy: member }));
       if (queueItems === 0 && !server.playing) {
         songControls.nextSong(server);
       }
