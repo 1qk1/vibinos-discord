@@ -115,7 +115,7 @@ class Server {
     this.timeOut = setTimeout(() => {
       this.leaveChannel()
       this.channel.send(`Left the channel due to inactivity`);
-    }, 1000)
+    }, 1000 * 60 * process.env.TIMEOUT_MINUTES)
 
     return;
   }
