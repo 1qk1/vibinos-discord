@@ -5,6 +5,7 @@ const { state } = require('./utils/models/servers');
 const validator = require('validator');
 const mongoose = require('mongoose');
 const Sentry = require("@sentry/node");
+const timeoutActions = require('./utils/timeoutActions')
 
 const blacklistedChars = '\\[\\\\;\'"\\]'
 
@@ -63,6 +64,18 @@ client.on("message", async message => {
       await server.joinChannel(message.member.voice.channel)
     }
     command.execute(server, message, args);
+    if (command.timeoutAction) {
+      switch (command.timeoutAction) {
+        case timeoutActions.TIMEOUT_START:
+          server.addTimer()
+          break;
+        case timeoutActions.TIMEOUT_STOP:
+          server.removeTimer()
+          break;
+        default:
+          break;
+      }
+    }
   } catch (error) {
     console.error(error);
     Sentry.captureException(error);

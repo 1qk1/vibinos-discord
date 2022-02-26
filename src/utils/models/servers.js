@@ -112,14 +112,15 @@ class Server {
       clearTimeout(this.timeOut)
     }
     if (!this.botChannel) return;
-    this.timeOut = setTimeout(() => () => {
-      botChannel.leave()
-    }, 1000 * 60 * 10)
+    this.timeOut = setTimeout(() => {
+      this.leaveChannel()
+      this.channel.send(`Left the channel due to inactivity`);
+    }, 1000)
 
     return;
   }
 
-  stopTimer() {
+  removeTimer() {
     if (this.timeOut) {
       clearTimeout(this.timeOut)
     }

@@ -6,6 +6,7 @@ const { state } = require('../utils/models/servers')
 const Song = require('../utils/models/song')
 const Member = require('../utils/models/member')
 const ytdl = require('ytdl-core');
+const timeoutActions = require('../utils/timeoutActions')
 
 module.exports = {
   name: 'play',
@@ -13,6 +14,7 @@ module.exports = {
   needsVoiceChannel: true,
   autoJoin: true,
   args: true,
+  timeoutAction: timeoutActions.TIMEOUT_STOP,
   usage: `\`${state.prefix}play childish gambino redbone\` or \n\`${state.prefix}play https://www.youtube.com/watch?v=0J2QdDbelmY\``,
   async execute(server, message, args) {
     const songs = args;

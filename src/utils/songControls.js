@@ -15,7 +15,7 @@ const nextSong = (server) => {
 }
 
 const playSong = (server, song) => {
-  server.stopTimer();
+  server.removeTimer();
   server.playing = true
   const filters = {
     nightcore: [
