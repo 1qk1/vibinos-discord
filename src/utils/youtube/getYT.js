@@ -4,7 +4,7 @@ const ytdl = require('ytdl-core');
 
 module.exports = (song) => {
   let searchSong = song.name
-  if (ytdl.validateID(song.url) || ytdl.validateURL(song.url)) {
+  if (song.url && (ytdl.validateID(song.url) || ytdl.validateURL(song.url))) {
     searchSong = { videoId: ytdl.getVideoID(song.url) }
   }
   return yts(searchSong).then(res => {
