@@ -27,7 +27,6 @@
     "dotenv-defaults": "^5.0.2",
     "libsodium-wrappers": "^0.7.10",
     "mongoose": "^5.12.14",
-    "nanoid": "^4.0.0",
     "spotify-web-api-node": "^5.0.2",
     "url-parse": "^1.5.10",
     "validator": "^13.7.0",
