@@ -23,3 +23,4 @@ jobs:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
             dokku-host: 'api.prodapp.xyz'
             app-name: 'vibinos'
+            git-push-flags: --force
