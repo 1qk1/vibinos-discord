@@ -1,6 +1,6 @@
-const { state } = require('../utils/models/servers')
+import { state } from '../utils/models/servers.js';
 
-module.exports = {
+export default {
   name: 'quality',
   description: 'Change the bot voice quality. Available options are low(48kbps), medium(64kbps), high(96kbps).',
   usage: `${state.prefix}quality \`high\`, ${state.prefix}quality \`medium\``,

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   TIMEOUT_START: "TIMEOUT_START",
   TIMEOUT_STOP: "TIMEOUT_STOP",
 }

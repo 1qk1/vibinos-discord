@@ -1,13 +1,13 @@
-require("dotenv-defaults").config();
-
-const client = require('./utils/client');
-const { state } = require('./utils/models/servers');
-const validator = require('validator');
-const mongoose = require('mongoose');
-const Sentry = require("@sentry/node");
-const timeoutActions = require('./utils/timeoutActions')
-
-const blacklistedChars = '\\[\\\\;\'"\\]'
+import { config } from "dotenv-defaults";
+config();
+import client from './utils/client.js';
+import { state } from './utils/models/servers.js';
+import validator from 'validator';
+import mongoose from 'mongoose';
+import * as Sentry from "@sentry/node";
+import timeoutActions from './utils/timeoutActions.js';
+import registerCommands from './utils/registerCommands.js';
+import { Events } from 'discord.js';
 
 if (process.env.SENTRY_DSN && process.env.NODE_ENV.toLowerCase() === 'production') {
   Sentry.init({
@@ -17,69 +17,179 @@ if (process.env.SENTRY_DSN && process.env.NODE_ENV.toLowerCase() === 'production
 }
 
 mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
 }).then(() => {
   console.log('connected to database successfully')
 });
 
-client.on("ready", () => {
+client.on(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity(`${state.prefix}help and ${state.prefix}play`, { type: "LISTENING" });
+  registerCommands().then(() => {
+    console.log('Commands registered successfully');
+  }).catch(error => {
+    console.error('Error registering commands:', error);
+  });
 });
-client.on("guildCreate", () => {
+
+client.on(Events.GuildCreate, async (guild) => {
   client.user.setActivity(`${state.prefix}help and ${state.prefix}play`, { type: "LISTENING" });
+
+  // Try to register slash commands for this guild
+  try {
+    const { registerGuildCommands } = await import('./utils/registerCommands.js');
+    await registerGuildCommands(guild.id);
+    console.log(`Slash commands registered for new guild: ${guild.name} (${guild.id})`);
+  } catch (error) {
+    console.log(`Could not register slash commands for guild ${guild.name}:`, error.message);
+    console.log('Message commands will still work with prefix:', state.prefix);
+  }
 });
 
-client.on("message", async message => {
-  if (!message.content.startsWith(state.prefix) || message.author.bot) return;
+// Message command handling
+client.on(Events.MessageCreate, async message => {
+  // Ignore messages from bots
+  if (message.author.bot) return;
 
-  const args = validator.blacklist(message.content.slice(state.prefix.length), blacklistedChars).split(/ +/);
+  // Ignore messages without prefix
+  if (!message.content.startsWith(state.prefix)) return;
+
+  // Parse command and arguments
+  const args = message.content.slice(state.prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
-  const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-  if (!command) return;
-  if (command.guildOnly && message.channel.type !== 'text') return message.reply('I can\'t execute that command inside DMs!');
-  if (command.args && !args.length) {
-    let reply = `You didn't provide any arguments, ${message.author}!`;
-    if (command.usage) reply += `\nThe proper usage would be: \ ${command.usage}`;
-    return message.channel.send(reply);
+  // Get the command
+  const command = client.commands?.get(commandName);
+
+  if (!command) {
+    // Command not found
+    return;
   }
 
-  if (command.needsVoiceChannel && !message.member.voice.channel) {
-    return message.channel.send(
-      "You must be in a channel to use this command."
-    );
-  }
-
-  if (!state.get(message.guild.id)) {
-    state.add(message.guild.id);
-  }
-  const server = state.get(message.guild.id);
-  server.channel = message.channel;
   try {
-    if (command.autoJoin) {
-      await server.joinChannel(message.member.voice.channel)
+    // Get or create server state for this guild
+    let server = state.get(message.guild.id);
+    if (!server) {
+      state.add(message.guild.id, { channel: message.channel });
+      server = state.get(message.guild.id);
     }
-    command.execute(server, message, args);
-    if (command.timeoutAction) {
-      switch (command.timeoutAction) {
-        case timeoutActions.TIMEOUT_START:
-          server.addTimer()
-          break;
-        case timeoutActions.TIMEOUT_STOP:
-          server.removeTimer()
-          break;
-        default:
-          break;
+
+    // Update server channel
+    server.channel = message.channel;
+
+    // Execute the command
+    await command.execute(server, message, args);
+  } catch (error) {
+    console.error(`Error executing command ${commandName}:`, error);
+    Sentry.captureException(error);
+
+    // Send error message to user
+    try {
+      await message.reply(`There was an error executing that command: ${error.message}`);
+    } catch (replyError) {
+      console.error('Could not send error message:', replyError);
+    }
+  }
+});
+
+// Slash command handling
+client.on(Events.InteractionCreate, async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const commandName = interaction.commandName;
+  const command = client.commands?.get(commandName);
+
+  if (!command) {
+    await interaction.reply({ content: 'Command not found.', ephemeral: true });
+    return;
+  }
+
+  try {
+    // Get or create server state for this guild
+    let server = state.get(interaction.guildId);
+    if (!server) {
+      state.add(interaction.guildId, { channel: interaction.channel });
+      server = state.get(interaction.guildId);
+    }
+
+    // Update server channel
+    server.channel = interaction.channel;
+
+    // Get arguments from interaction options
+    const args = [];
+
+    // Handle different command types
+    if (commandName === 'play') {
+      const query = interaction.options.getString('query');
+      if (query) {
+        // Split by spaces to simulate message command args
+        args.push(...query.split(' '));
       }
+    } else if (commandName === 'repeat') {
+      const mode = interaction.options.getString('mode') || 'off';
+      args.push(mode);
+    } else if (commandName === 'quality') {
+      const bitrate = interaction.options.getString('bitrate') || '64';
+      args.push(bitrate);
+    }
+    // For commands without options, args remains empty
+
+    // Create a mock message object for compatibility with existing command structure
+    const mockMessage = {
+      guild: interaction.guild,
+      channel: interaction.channel,
+      member: interaction.member,
+      author: interaction.user,
+      reply: async (content) => {
+        if (typeof content === 'string') {
+          if (interaction.deferred) {
+            await interaction.editReply({ content });
+          } else {
+            await interaction.reply({ content });
+          }
+        } else if (content && content.embeds) {
+          if (interaction.deferred) {
+            await interaction.editReply({ embeds: content.embeds });
+          } else {
+            await interaction.reply({ embeds: content.embeds });
+          }
+        } else {
+          if (interaction.deferred) {
+            await interaction.editReply({ content: 'Command executed.' });
+          } else {
+            await interaction.reply({ content: 'Command executed.' });
+          }
+        }
+      },
+      client: interaction.client
+    };
+
+    // Defer reply for commands that might take time (like play)
+    const shouldDefer = ['play', 'mix', 'skip', 'stop', 'pause', 'resume'].includes(commandName);
+    if (shouldDefer) {
+      await interaction.deferReply();
+    }
+
+    // Execute the command
+    await command.execute(server, mockMessage, args);
+
+    // If the command didn't reply already and we deferred, send a default response
+    if (shouldDefer && !interaction.replied) {
+      await interaction.editReply('Command executed successfully.');
     }
   } catch (error) {
-    console.error(error);
+    console.error(`Error executing slash command ${commandName}:`, error);
     Sentry.captureException(error);
-    message.reply('there was an error trying to execute that command!');
+
+    try {
+      const errorMessage = `There was an error executing that command: ${error.message}`;
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply(errorMessage);
+      } else {
+        await interaction.reply({ content: errorMessage, ephemeral: true });
+      }
+    } catch (replyError) {
+      console.error('Could not send error message:', replyError);
+    }
   }
 });
 

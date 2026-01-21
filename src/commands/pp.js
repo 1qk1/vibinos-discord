@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'pp',
   description: 'Play a saved playlist.',
   args: true,

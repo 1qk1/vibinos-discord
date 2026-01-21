@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'nightcore',
   description: 'Turns nightcore mode on or off',
   execute(server, message, nightcoreLevel) {

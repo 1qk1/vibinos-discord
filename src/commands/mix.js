@@ -1,10 +1,10 @@
-const download = require('../functions/download')
-const compileSongs = require('../functions/compileSongs')
-const { state } = require('../utils/models/servers')
-const yts = require('yt-search');
-const Song = require('../utils/models/song')
+import download from '../functions/download.js';
+import compileSongs from '../functions/compileSongs.js';
+import { state } from '../utils/models/servers.js';
+import yts from 'yt-search';
+import Song from '../utils/models/song.js';
 
-module.exports = {
+export default {
   name: 'mix',
   description: `Plays a mix of 2 youtube songs (\`${state.prefix}mix Seven Nation Army, Eurythmics - Sweet Dreams\`). It also works with youtube urls instead of names.`,
   needsVoiceChannel: true,

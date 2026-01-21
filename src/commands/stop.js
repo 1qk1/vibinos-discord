@@ -1,7 +1,7 @@
-const songControls = require('../utils/songControls')
-const timeoutActions = require('../utils/timeoutActions')
+import songControls from '../utils/songControls.js';
+import timeoutActions from '../utils/timeoutActions.js';
 
-module.exports = {
+export default {
   name: 'stop',
   timeoutAction: timeoutActions.TIMEOUT_START,
   description: 'Stops all playing songs.',

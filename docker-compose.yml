@@ -1,4 +1,4 @@
-version: '2'
+version: '3.8'
 services:
   app:
     build: .
@@ -7,18 +7,39 @@ services:
     command: npm run dev
     volumes:
       - .:/home/app/vibinos
-      - /home/app/vibinos/node_modules
+      # - /home/app/vibinos/node_modules  # Commented out to prevent hiding built node_modules
     depends_on:
       - mongo
+      - lavalink
+    restart: unless-stopped
+    
+  lavalink:
+    image: fredboat/lavalink:latest
+    container_name: lavalink
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=2333
+      - LAVALINK_SERVER_PASSWORD=youshallnotpass
+      - LAVALINK_SERVER_HOST=0.0.0.0
+    volumes:
+      - ./lavalink/application.yml:/opt/Lavalink/application.yml
+      - ./lavalink/plugins:/opt/Lavalink/plugins
+    ports:
+      - "2333:2333"
+      
   mongo:
-    image: mongo:3.6
+    image: mongo:8
     volumes:
       - mongo-volume:/data/db
+    restart: unless-stopped
   
   # mongo-express:
   #   image: mongo-express
   #   ports:
   #     - 8081:8081
+  #   depends_on:
+  #     - mongo
+  #   restart: unless-stopped
   
 volumes:
   mongo-volume:

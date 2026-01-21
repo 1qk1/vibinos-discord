@@ -1,7 +1,7 @@
-const async = require('async');
-const fs = require('fs');
-const path = require('path');
-const ytdl = require("ytdl-core");
+import async from 'async';
+import fs from 'fs';
+import path from 'path';
+import ytdl from "ytdl-core";
 
 const download = (songs, cb) => {
   // downloads songs and returns the file names
@@ -31,4 +31,4 @@ const download = (songs, cb) => {
   })
 }
 
-module.exports = download
+export default download

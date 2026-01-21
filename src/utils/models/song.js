@@ -1,11 +1,13 @@
-module.exports = class {
+export default class {
   constructor({
     url,
     name,
-    addedBy
+    addedBy,
+    videoId
   } = {}) {
     this.url = url
     this.name = name
     this.addedBy = addedBy
+    this.videoId = videoId
   }
 }

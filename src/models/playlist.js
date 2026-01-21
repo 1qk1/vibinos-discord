@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const Guild = require('./guild')
+import mongoose from "mongoose";
+import Guild from './guild.js';
 
 const memberSchema = new mongoose.Schema({
   member_id: {
@@ -42,4 +42,4 @@ playlistSchema.index({ name: 1 });
 
 const Playlist = mongoose.model("playlist", playlistSchema);
 
-module.exports = Playlist;
+export default Playlist

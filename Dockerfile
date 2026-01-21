@@ -1,12 +1,12 @@
-FROM node:16
+FROM node:22
 
 ENV HOME=/home/app
 
 RUN apt-get update && apt-get install ffmpeg -y
 
-COPY package.json package-lock.json $HOME/vibinos/
-
 WORKDIR $HOME/vibinos
+
+COPY package.json package-lock.json $HOME/vibinos/
 
 RUN npm install --silent --progress=false
 

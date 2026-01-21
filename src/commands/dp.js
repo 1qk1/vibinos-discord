@@ -1,6 +1,6 @@
-const { state } = require('../utils/models/servers')
+import { state } from '../utils/models/servers.js'
 
-module.exports = {
+export default {
   name: 'dp',
   aliases: ['delete'],
   description: 'Deletes a saved playlist.',

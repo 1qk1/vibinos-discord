@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'queue',
   aliases: ["q"],
   description: 'Show all queued songs.',

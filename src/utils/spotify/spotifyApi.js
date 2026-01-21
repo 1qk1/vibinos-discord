@@ -1,4 +1,4 @@
-const SpotifyWebApi = require('spotify-web-api-node');
+import SpotifyWebApi from 'spotify-web-api-node';
 
 const clientId = process.env.SPOTIFY_CLIENT_ID,
   clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
@@ -38,4 +38,4 @@ const getPlaylistTracks = async (playlist) => {
   return tracks
 }
 
-module.exports = { spotifyApi, getPlaylistTracks }
+export { spotifyApi, getPlaylistTracks }

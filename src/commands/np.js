@@ -1,6 +1,6 @@
 // now playing
 
-module.exports = {
+export default {
   name: 'np',
   aliases: ['playing', 'nowplaying'],
   description: 'Show the currently playing song.',

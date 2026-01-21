@@ -1,6 +1,6 @@
-const songControls = require('../utils/songControls')
+import songControls from '../utils/songControls.js'
 
-module.exports = {
+export default {
   name: "leave",
   description: "Join the user's voice channel",
   needsVoiceChannel: true,

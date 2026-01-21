@@ -1,7 +1,7 @@
-const path = require('path');
-const { exec } = require("child_process");
-const fs = require('fs');
-const { getYoutubeURL } = require('../utils/youtube/youtube')
+import path from 'path';
+import { exec } from "child_process";
+import fs from 'fs';
+import { getYoutubeURL } from '../utils/youtube/youtube.js';
 
 const compileSongs = (songPaths, cb) => {
   const songID = songPaths.map(song => getYoutubeURL(song)).join('')
@@ -17,4 +17,4 @@ const compileSongs = (songPaths, cb) => {
   });
 }
 
-module.exports = compileSongs
+export default compileSongs

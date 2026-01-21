@@ -1,4 +1,4 @@
-var Url = require('url-parse');
+import Url from 'url-parse';
 
 const isSpotifyPlaylist = (url) => {
   const urlObj = new Url(url);
@@ -14,9 +14,9 @@ const getPlaylistID = (url) => {
   if (urlObj.host === 'open.spotify.com' && fromURL) {
     return fromURL[1]
   }
-  playlistID = url.match(/(?:spotify\:playlist\:)([a-zA-Z0-9]*)/)
+  const playlistID = url.match(/(?:spotify\:playlist\:)([a-zA-Z0-9]*)/)
   if (playlistID)
     return playlistID[1];
 }
 
-module.exports = { isSpotifyPlaylist, getPlaylistID }
+export { isSpotifyPlaylist, getPlaylistID }

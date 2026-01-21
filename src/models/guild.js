@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const guildSchema = new mongoose.Schema({
   guild_id: {
@@ -10,8 +10,8 @@ const guildSchema = new mongoose.Schema({
     default: 64
   },
 });
-guildSchema.index({ guild_id: 1 });
+// guildSchema.index({ guild_id: 1 }); // Removed duplicate index - unique: true already creates an index
 
 const Guild = mongoose.model("guild", guildSchema);
 
-module.exports = Guild;
+export default Guild;

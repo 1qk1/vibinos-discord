@@ -1,84 +1,136 @@
-const dytdl = require('discord-ytdl-core');
-const ytdl = require('ytdl-core');
-const myytdl = require('./youtube/ytdl');
-const yts = require('yt-search');
+/**
+ * Shoukaku-based song controls
+ * This is a compatibility wrapper that provides the same interface
+ * as the old songControls.js but uses Shoukaku/Lavalink internally
+ */
 
-const nextSong = (server) => {
-  server.setNextSong()
-  if (server.queue.length > server.queueIndex) {
-    const song = server.queue[server.queueIndex]
-    playSong(server, song)
-  } else {
-    stopSongs(server)
-    server.addTimer();
-  }
-}
+// Global reference to ShoukakuPlayback instance
+let shoukakuPlayback = null;
 
-const playSong = (server, song) => {
-  server.removeTimer();
-  server.playing = true
-  const filters = {
-    nightcore: [
-      ['-af', 'asetrate=48000*1.2,aresample=48000,atempo=1/1.05'],
-      ['-af', 'asetrate=48000*1.3,aresample=48000,atempo=1/1.1'],
-      ['-af', 'asetrate=48000*1.45,aresample=48000,atempo=1/1.2']
-    ]
-  }
-  if (song.name && !song.url) {
-    yts(song.name).then(results => {
-      let dispatcher
-      if (server.nightcore) {
-        const stream = myytdl(results.videos[0].url, server, { encoderArgs: filters.nightcore[server.nightcore - 1], fmt: "mp3", opusEncoded: false })
-        dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
-        server.channel.send(`Playing **\`${results.videos[0].title}\`** in nightcore mode. Let's get funky.`);
-      } else {
-        // console.log(results.videos[0])
-        dispatcher = server.connection.play(myytdl(results.videos[0].url, server), { bitrate: server.quality || 64, type: "opus" })
-        server.channel.send(`Playing **\`${results.videos[0].title}\`**. Let's get funky.`);
-      }
-      dispatcher.on("finish", () => {
-        nextSong(server);
-      });
-
-      server.dispatcher = dispatcher
-      server.dispatcher.on('error', console.error);
-    })
-  } else {
-    let dispatcher
-    if (ytdl.validateURL(song.url)) {
-      if (server.nightcore) {
-        const stream = myytdl(song.url, server, { encoderArgs: filters.nightcore[server.nightcore - 1], fmt: "mp3", opusEncoded: false })
-        dispatcher = server.connection.play(stream, { bitrate: server.quality || 64 })
-        server.channel.send(`Playing **\`${song.name}\`** in nightcore mode. Let's get funky.`);
-      } else {
-        dispatcher = server.connection.play(myytdl(song.url, server), { bitrate: server.quality || 64, type: "opus" })
-      }
-    } else {
-      dispatcher = server.connection.play(song.url, { bitrate: server.quality || 64 })
-    }
-    dispatcher.on("finish", () => {
-      nextSong(server);
+/**
+ * Initialize the song controls with ShoukakuPlayback instance
+ * This should be called once during bot startup
+ */
+export function initialize(shoukakuManager) {
+  if (!shoukakuPlayback && shoukakuManager) {
+    // Import dynamically to avoid circular dependencies
+    import('./audio/ShoukakuPlayback.js').then(module => {
+      const ShoukakuPlayback = module.default;
+      shoukakuPlayback = new ShoukakuPlayback(shoukakuManager);
+      console.log('✅ ShoukakuPlayback initialized for song controls');
+    }).catch(error => {
+      console.error('Failed to initialize ShoukakuPlayback:', error);
     });
-
-    server.dispatcher = dispatcher
-    server.dispatcher.on('error', console.error);
   }
 }
 
+/**
+ * Get the ShoukakuPlayback instance
+ * Returns null if not initialized yet
+ */
+function getPlayback() {
+  if (!shoukakuPlayback) {
+    console.warn('ShoukakuPlayback not initialized yet. Audio commands may not work.');
+  }
+  return shoukakuPlayback;
+}
+
+/**
+ * Play the next song in the queue
+ * @param {Server} server - Server instance
+ */
+const nextSong = (server) => {
+  const playback = getPlayback();
+  if (playback) {
+    return playback.nextSong(server);
+  } else {
+    // Fallback: just update queue index
+    server.setNextSong();
+    if (server.queue.length > server.queueIndex) {
+      console.warn('ShoukakuPlayback not ready, cannot play next song');
+    } else {
+      stopSongs(server);
+      server.addTimer();
+    }
+  }
+};
+
+/**
+ * Play a specific song
+ * @param {Server} server - Server instance
+ * @param {Song} song - Song to play
+ */
+const playSong = async (server, song) => {
+  const playback = getPlayback();
+  if (playback) {
+    return playback.playSong(server, song);
+  } else {
+    console.error('ShoukakuPlayback not initialized, cannot play song');
+    server.playing = false;
+  }
+};
+
+/**
+ * Stop all playback and clear queues
+ * @param {Server} server - Server instance
+ */
 const stopSongs = (server) => {
-  // clear queue
-  // clear convertQueue queue
-  if (server.dispatcher) {
+  const playback = getPlayback();
+  if (playback) {
+    return playback.stopSongs(server);
+  } else {
+    // Basic cleanup without Shoukaku
     server.queue = [];
-    server.dispatcher.end();
     server.convertQueue = [];
     server.playing = false;
-    server.queueIndex = -1
+    server.queueIndex = -1;
+    server.dispatcher = null;
+    server.audioPlayer = null;
   }
-}
+};
 
-module.exports = {
+/**
+ * Pause playback
+ * @param {Server} server - Server instance
+ * @param {boolean} pause - Whether to pause (true) or resume (false)
+ */
+const pause = async (server, pause = true) => {
+  const playback = getPlayback();
+  if (playback) {
+    return playback.pause(server, pause);
+  }
+};
+
+/**
+ * Set volume
+ * @param {Server} server - Server instance
+ * @param {number} volume - Volume level (0-100)
+ */
+const setVolume = async (server, volume) => {
+  const playback = getPlayback();
+  if (playback) {
+    return playback.setVolume(server, volume);
+  }
+};
+
+/**
+ * Seek to position in current track
+ * @param {Server} server - Server instance
+ * @param {number} position - Position in milliseconds
+ */
+const seek = async (server, position) => {
+  const playback = getPlayback();
+  if (playback) {
+    return playback.seek(server, position);
+  }
+};
+
+export default {
   playSong,
   nextSong,
-  stopSongs
-}
+  stopSongs,
+  pause,
+  setVolume,
+  seek,
+  initialize
+};

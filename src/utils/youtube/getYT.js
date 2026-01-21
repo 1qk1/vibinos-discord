@@ -1,15 +1,17 @@
-const yts = require('yt-search');
-const Song = require('../models/song')
-const ytdl = require('ytdl-core');
+import yts from 'yt-search';
+import Song from '../models/song.js';
+import ytdl from 'ytdl-core';
 
-module.exports = (song) => {
+export default (song) => {
   let searchSong = song.name
   if (song.url && (ytdl.validateID(song.url) || ytdl.validateURL(song.url))) {
     searchSong = { videoId: ytdl.getVideoID(song.url) }
   }
   return yts(searchSong).then(res => {
     const ytSong = !res.videos ? res : res.videos[0]
+    console.log(ytSong)
     const songData = {
+      videoId: ytSong.videoId,
       url: ytSong.url,
       name: ytSong.title,
       addedBy: song.addedBy

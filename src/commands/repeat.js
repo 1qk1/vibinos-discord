@@ -1,7 +1,7 @@
-const { state } = require('../utils/models/servers')
-const { repeat: repeatStates, repeatArray: repeatStatesArray } = require('../utils/variables')
+import { state } from '../utils/models/servers.js';
+import { repeat as repeatStates, repeatArray as repeatStatesArray } from '../utils/variables.js';
 
-module.exports = {
+export default {
   name: 'repeat',
   description: 'Turns repeat mode between single songs, all songs, off.',
   usage: `\`${state.prefix}repeat all\`, \`${state.prefix}repeat single\` or \`${state.prefix}repeat off\`.`,

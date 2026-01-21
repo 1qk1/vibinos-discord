@@ -1,29 +1,40 @@
-const { MessageEmbed } = require("discord.js");
-const { state } = require('../utils/models/servers')
-const client = require('../utils/client')
+import { EmbedBuilder } from "discord.js";
+import { state } from '../utils/models/servers.js'
+import client from '../utils/client.js'
 
-module.exports = {
+export default {
   name: "help",
   aliases: ["h"],
   description: "Display all commands and descriptions",
   execute(server, message) {
-    let commands = client.commands.array();
+    console.log("help command executed");
+    let commands = Array.from(client.commands?.values() || []);
 
-    let helpEmbed = new MessageEmbed()
+    // Filter to unique commands (remove aliases)
+    const uniqueCommands = [];
+    const seen = new Set();
+    commands.forEach((cmd) => {
+      if (!seen.has(cmd.name)) {
+        seen.add(cmd.name);
+        uniqueCommands.push(cmd);
+      }
+    });
+
+    let helpEmbed = new EmbedBuilder()
       .setTitle(`${message.client.user.username} Help`)
       .setDescription("List of all the commands")
       .setColor("#a689e0");
 
-    commands.forEach((cmd) => {
-      helpEmbed.addField(
-        `**${state.prefix}${cmd.name} ${cmd.aliases ? `(${cmd.aliases})` : ""}**`,
-        `${cmd.description}`,
-        true
-      );
+    uniqueCommands.forEach((cmd) => {
+      helpEmbed.addFields({
+        name: `**${state.prefix}${cmd.name} ${cmd.aliases ? `(${cmd.aliases.join(', ')})` : ""}**`,
+        value: `${cmd.description || 'No description'}`,
+        inline: true
+      });
     });
 
     helpEmbed.setTimestamp();
 
-    return server.channel.send(helpEmbed).catch(console.error);
+    return server.channel.send({ embeds: [helpEmbed] }).catch(console.error);
   }
 };
